@@ -1,4 +1,4 @@
-# Архитектура (черновик под вариант D1, до подтверждения стека)
+# Архитектура (стек D1 принят 7.09.2026; детали уточняются по ходу этапов)
 
 Цель этого файла — чтобы любая новая сессия Claude Code за минуту поняла, как всё устроено.
 Обновлять при каждом изменении структуры.
@@ -74,7 +74,11 @@ show_state  (ровно одна строка, id = 1)
   screen_mode            'qr' | 'current' | 'reveal' | 'overview'
   current_project_id     id проекта на сцене или NULL
   reveal_project_id      id проекта для раскрытия или NULL
-  show_totals_to_guests  0/1
+  show_totals_to_guests  0/1 — общие суммы зрителям во время голосования (по умолчанию выкл)
+  results_visible_to_guests 0/1 — итоги на телефонах после закрытия, включает ведущий кнопкой (D11)
+  reveal_amount          снимок суммы для режима «раскрытие» (D12)
+  reveal_investors       снимок числа инвесторов для режима «раскрытие» (D12)
+  reveal_at              когда сделан снимок
   default_budget         1000000
   updated_at
 
@@ -131,8 +135,17 @@ action_log
 - `GET/POST/PUT/DELETE /api/admin/projects` — проекты, порядок, открыть/закрыть
 - `POST /api/admin/show { ...поля show_state }` — переключатели
 - `GET  /api/admin/tickets`, `POST /api/admin/tickets/import`, `POST /api/admin/tickets/:number/release`
+- `POST /api/admin/tickets/generate { count }` — сгенерировать коды (D13), `GET /api/admin/tickets/export` — скачать список текстом
+- `POST /api/admin/reveal { project_id }` — сделать снимок суммы для режима «раскрытие» (D12)
+- `POST /api/admin/seed-demo` — заполнить тестовыми проектами (только для демо и репетиций, в «опасной зоне»)
 - `POST /api/admin/reset { scope: 'allocations' | 'all', confirm: 'СБРОСИТЬ' }`
 - `GET  /api/screen/state` — режим экрана + агрегаты (не чаще раза в секунду)
+
+## Как запускается (D14)
+
+- Демо и репетиции: `npm run dev` на Маке. Сервер печатает в консоль адрес в локальной сети (`http://192.168.x.x:3000`), телефоны в той же Wi-Fi открывают его.
+- Показать кому-то снаружи: `cloudflared tunnel --url http://localhost:3000` даёт временную публичную ссылку.
+- Боевой хостинг (этап 7): Railway, контейнер + постоянный диск для `data/arena.db`. Плюс план Б — тот же `npm start` на ноутбуке в зале.
 
 ## Правила надёжности
 
