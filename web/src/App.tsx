@@ -5,7 +5,6 @@ import { useRoute } from './lib/router'
 import { AdminPage } from './pages/AdminPage'
 import { GuestPage } from './pages/GuestPage'
 import { JoinPage } from './pages/JoinPage'
-import { ResultsPage } from './pages/ResultsPage'
 import { ScreenPage } from './pages/ScreenPage'
 
 export default function App() {
@@ -15,7 +14,6 @@ export default function App() {
     join: <JoinPage />,
     app: <GuestPage />,
     screen: <ScreenPage />,
-    results: <ResultsPage />,
     admin: <AdminPage />,
   }[route]
 

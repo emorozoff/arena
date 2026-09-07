@@ -8,7 +8,6 @@ import type {
   GuestState,
   LiveChannel,
   ResetScope,
-  ResultsState,
   ScreenState,
   ShowState,
 } from '@shared/types'
@@ -21,7 +20,6 @@ export interface Api {
 
   // Экран на сцену
   getScreen(): Promise<ScreenState>
-  getResults(): Promise<ResultsState>
 
   // Ведущий
   adminIsLoggedIn(): Promise<boolean>

@@ -77,9 +77,7 @@ show_state  (ровно одна строка, id = 1)
   ticket_mode            'free' | 'whitelist'
   ticket_length          длина номера билета — берётся из shared/config.ts, в админке не меняется (D18)
   ticket_chars           'digits' | 'letters_digits' — то же
-  screen_mode            'qr' | 'current' | 'reveal' | 'overview'
-  current_project_id     id проекта на сцене или NULL
-  reveal_project_id      id проекта для раскрытия или NULL
+  screen_mode            'qr' | 'overview' (D20)
   default_budget         1000000
   updated_at
 
@@ -139,7 +137,7 @@ action_log
 - `POST /api/admin/tickets/generate { count }` — сгенерировать коды (D13), `GET /api/admin/tickets/export` — скачать список текстом
 - `POST /api/admin/seed-demo` — заполнить тестовыми проектами (только для демо и репетиций, в «опасной зоне»)
 - `POST /api/admin/reset { scope: 'allocations' | 'all', confirm: 'СБРОСИТЬ' }`
-- `GET  /api/screen/state` — режим экрана + агрегаты (не чаще раза в секунду)
+- `GET  /api/screen/state` — режим экрана (QR или расклад) + суммы по открытым проектам (не чаще раза в секунду)
 
 ## Два «сервера» для одного интерфейса (D16)
 
@@ -151,7 +149,7 @@ action_log
 
 ## Адреса страниц
 
-Навигация по `#hash` (`#/join`, `#/app`, `#/screen`, `#/screen/results`, `#/admin`), а не по обычным путям: так одна и та же сборка работает на GitHub Pages, как локальный файл и на своём сервере без настройки маршрутов. QR ведёт на `…/#/join`. На этапе хостинга сервер может добавить редиректы `/join → /#/join` для красоты.
+Навигация по `#hash` (`#/join`, `#/app`, `#/screen`, `#/admin`), а не по обычным путям: так одна и та же сборка работает на GitHub Pages, как локальный файл и на своём сервере без настройки маршрутов. QR ведёт на `…/#/join`. На этапе хостинга сервер может добавить редиректы `/join → /#/join` для красоты.
 
 ## Как запускается (D14)
 

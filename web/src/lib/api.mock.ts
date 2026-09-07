@@ -12,14 +12,13 @@ import {
   type Project,
   type ProjectTotals,
   type ResetScope,
-  type ResultsState,
   type ScreenState,
   type ShowState,
 } from '@shared/types'
 import type { Api } from './api.types'
 import { joinUrl } from './router'
 
-const STORAGE_KEY = 'arena_demo_state_v1'
+const STORAGE_KEY = 'arena_demo_state_v2'
 const TOKEN_KEY = 'arena_demo_token' // в бою — cookie устройства
 
 // ---------- Данные, как в базе ----------
@@ -104,8 +103,6 @@ function freshShow(): ShowState {
     ticket_length: config.ticketLength,
     ticket_chars: config.ticketChars,
     screen_mode: 'qr',
-    current_project_id: null,
-    reveal_project_id: null,
     default_budget: config.defaultBudget,
   }
 }
@@ -121,10 +118,7 @@ function demoProjects(openCount: number): Project[] {
 }
 
 function freshStore(): Store {
-  const projects = demoProjects(config.demo.openAtStart)
-  const show = freshShow()
-  show.current_project_id = projects[config.demo.openAtStart - 1]?.id ?? null
-  return { show, projects, guests: [], tickets: [], log: [], last_action_at: null }
+  return { show: freshShow(), projects: demoProjects(config.demo.openAtStart), guests: [], tickets: [], log: [], last_action_at: null }
 }
 
 function loadStore(): Store {
@@ -454,29 +448,16 @@ export const mockApi: Api = {
 
   async getScreen(): Promise<ScreenState> {
     const show = store.show
-    const current = projectById(show.current_project_id)
-    const reveal = projectById(show.reveal_project_id)
     return {
       mode: show.screen_mode,
       voting_open: show.voting_open,
       registered: store.guests.length,
       join_url: joinUrl(),
-      current: current ? totals(current) : null,
-      reveal: reveal ? totals(reveal) : null,
       overview: sortedProjects()
         .filter((p) => p.is_open)
         .map(totals)
         .sort((a, b) => b.amount - a.amount || a.position - b.position),
     }
-  },
-
-  async getResults(): Promise<ResultsState> {
-    const rows = sortedProjects()
-      .filter((p) => p.is_open)
-      .map(totals)
-      .sort((a, b) => b.amount - a.amount || a.position - b.position)
-      .map((p, i) => ({ ...p, rank: i + 1, average: p.investors ? Math.round(p.amount / p.investors) : 0 }))
-    return { voting_open: store.show.voting_open, rows }
   },
 
   async adminIsLoggedIn() {
@@ -529,8 +510,6 @@ export const mockApi: Api = {
     if (p) {
       const returned = removeAllocationsFor(id)
       store.projects = store.projects.filter((x) => x.id !== id)
-      if (store.show.current_project_id === id) store.show.current_project_id = null
-      if (store.show.reveal_project_id === id) store.show.reveal_project_id = null
       renumber()
       log('project_delete', `${p.name}: возвращено ${formatMoney(returned.amount)} ${returned.investors} зрителям`)
       emitShow()
@@ -646,8 +625,6 @@ export const mockApi: Api = {
         .filter(() => store.show.ticket_mode === 'whitelist')
         .map((t) => ({ ...t, guest_id: null, claimed_at: null, released: false }))
       for (const p of store.projects) p.is_open = false
-      store.show.current_project_id = null
-      store.show.reveal_project_id = null
       store.show.registration_open = true
       store.show.voting_open = true
       store.show.screen_mode = 'qr'
@@ -663,8 +640,6 @@ export const mockApi: Api = {
     await likeNetwork()
     for (const g of store.guests) g.allocations = {}
     store.projects = demoProjects(0)
-    store.show.current_project_id = null
-    store.show.reveal_project_id = null
     log('seed_demo', 'Тестовые проекты')
     markTotalsChanged()
     emitShow()

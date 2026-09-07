@@ -7,7 +7,7 @@ import { Button } from './Button'
 
 const INTRO_KEY = 'arena_demo_intro_seen'
 
-const roles: Route[] = ['app', 'admin', 'screen', 'results']
+const roles: Route[] = ['app', 'admin', 'screen']
 
 export function DemoBar({ route }: { route: Route }) {
   const [restartArmed, setRestartArmed] = useState(false)

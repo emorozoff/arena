@@ -1,7 +1,7 @@
 // Формы данных, общие для сервера и фронтенда. Меняются вместе с ARCHITECTURE.md.
 
 export type TicketMode = 'free' | 'whitelist'
-export type ScreenMode = 'qr' | 'current' | 'reveal' | 'overview'
+export type ScreenMode = 'qr' | 'overview'
 export type TicketChars = 'digits' | 'letters_digits'
 
 // Состояние шоу: одна строка в базе, все переключатели ведущего
@@ -12,8 +12,6 @@ export interface ShowState {
   ticket_length: number
   ticket_chars: TicketChars
   screen_mode: ScreenMode
-  current_project_id: string | null   // проект «сейчас на сцене»
-  reveal_project_id: string | null    // проект для режима «раскрытие суммы»
   default_budget: number
 }
 
@@ -55,19 +53,7 @@ export interface ScreenState {
   voting_open: boolean
   registered: number
   join_url: string
-  current: ProjectTotals | null
-  reveal: ProjectTotals | null
-  overview: ProjectTotals[]   // открытые проекты, по убыванию суммы
-}
-
-export interface ResultsRow extends ProjectTotals {
-  rank: number
-  average: number   // средний чек
-}
-
-export interface ResultsState {
-  voting_open: boolean
-  rows: ResultsRow[]   // по убыванию суммы, rank = 1 у победителя
+  overview: ProjectTotals[]   // открытые проекты, по убыванию суммы; первый — лидер
 }
 
 export type TicketStatus = 'free' | 'claimed' | 'released'

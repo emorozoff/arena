@@ -1,13 +1,13 @@
 // Маршруты страниц по #hash: работает и на github.io/arena/, и как файл, и на своём сервере.
+// Страницы: #/join — вход, #/app — зритель, #/screen — экран на сцену, #/admin — пульт.
 import { useEffect, useState } from 'react'
 
-export type Route = 'join' | 'app' | 'screen' | 'results' | 'admin'
+export type Route = 'join' | 'app' | 'screen' | 'admin'
 
 export const paths: Record<Route, string> = {
   join: '#/join',
   app: '#/app',
   screen: '#/screen',
-  results: '#/screen/results',
   admin: '#/admin',
 }
 
@@ -18,8 +18,6 @@ function parse(hash: string): Route {
       return 'app'
     case 'screen':
       return 'screen'
-    case 'screen/results':
-      return 'results'
     case 'admin':
       return 'admin'
     default:

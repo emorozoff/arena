@@ -27,7 +27,7 @@ export function ProjectsPanel({ o, apply }: { o: AdminOverview; apply: Apply }) 
       {o.projects.length === 0 && <p className="text-muted">{texts.admin.noProjects}</p>}
       <ul className="flex flex-col gap-2">
         {o.projects.map((p, i) => (
-          <ProjectRow key={p.id} p={p} isFirst={i === 0} isLast={i === o.projects.length - 1} onStage={o.show.current_project_id === p.id} apply={apply} />
+          <ProjectRow key={p.id} p={p} isFirst={i === 0} isLast={i === o.projects.length - 1} apply={apply} />
         ))}
       </ul>
 
@@ -42,7 +42,7 @@ export function ProjectsPanel({ o, apply }: { o: AdminOverview; apply: Apply }) 
   )
 }
 
-function ProjectRow({ p, isFirst, isLast, onStage, apply }: { p: ProjectTotals; isFirst: boolean; isLast: boolean; onStage: boolean; apply: Apply }) {
+function ProjectRow({ p, isFirst, isLast, apply }: { p: ProjectTotals; isFirst: boolean; isLast: boolean; apply: Apply }) {
   const [editing, setEditing] = useState(false)
   const [name, setName] = useState(p.name)
   const [speaker, setSpeaker] = useState(p.speaker)
@@ -70,7 +70,6 @@ function ProjectRow({ p, isFirst, isLast, onStage, apply }: { p: ProjectTotals; 
           )}
           <div className="text-xs mt-1 flex flex-wrap gap-x-3 gap-y-1">
             <span className={p.is_open ? 'text-accent' : 'text-muted'}>{p.is_open ? texts.common.opened : texts.common.closed}</span>
-            {onStage && <span className="text-text">● {texts.admin.onStage}</span>}
             {p.is_open && (
               <span className="text-muted money">
                 {formatMoney(p.amount)} · {p.investors}
@@ -93,9 +92,6 @@ function ProjectRow({ p, isFirst, isLast, onStage, apply }: { p: ProjectTotals; 
             {texts.admin.openProject}
           </Button>
         )}
-        <Button size="sm" variant={onStage ? 'primary' : 'subtle'} onClick={() => void apply(() => api.adminUpdateShow({ current_project_id: onStage ? null : p.id }))}>
-          {texts.admin.onStage}
-        </Button>
         <Button size="sm" variant="subtle" disabled={isFirst} onClick={() => void apply(() => api.adminMoveProject(p.id, 'up'))}>
           ↑
         </Button>

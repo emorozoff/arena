@@ -1,4 +1,6 @@
-// Экран на сцену: тёмный фон, огромные цифры. Четыре режима переключает ведущий.
+// Экран на сцену: тёмный фон, огромные цифры. Два состояния переключает ведущий:
+// «QR-код» до начала и «Общий расклад» на весь вечер. Строки появляются по мере открытия проектов,
+// порядок — по сумме. После закрытия голосования у первой строки лёгкая пометка «Победитель».
 // При обрыве связи показывает последнее известное состояние. Никаких ошибок на проекторе.
 import { useEffect, useRef, useState } from 'react'
 import QRCode from 'qrcode'
@@ -27,22 +29,11 @@ export function ScreenPage() {
           <StatusDot online={online} />
         </div>
       </div>
-      <div className="flex-1 flex items-center justify-center">{s && <Mode s={s} />}</div>
+      <div className="flex-1 flex items-center justify-center">
+        {s && (s.mode === 'qr' ? <QrMode s={s} /> : <OverviewMode rows={s.overview} votingOpen={s.voting_open} />)}
+      </div>
     </div>
   )
-}
-
-function Mode({ s }: { s: ScreenState }) {
-  switch (s.mode) {
-    case 'qr':
-      return <QrMode s={s} />
-    case 'current':
-      return <CurrentMode project={s.current} />
-    case 'reveal':
-      return <RevealMode project={s.reveal} />
-    case 'overview':
-      return <OverviewMode rows={s.overview} />
-  }
 }
 
 function QrMode({ s }: { s: ScreenState }) {
@@ -74,44 +65,7 @@ function QrMode({ s }: { s: ScreenState }) {
   )
 }
 
-function CurrentMode({ project }: { project: ProjectTotals | null }) {
-  return (
-    <div className="text-center max-w-[90vw]">
-      <div className="text-muted display text-[clamp(18px,3.5vmin,48px)]">{texts.screen.nowOnStage}</div>
-      {project ? (
-        <>
-          <h1 className="display text-[clamp(40px,11vmin,180px)] leading-[0.95] mt-[2vmin]">{project.name}</h1>
-          <div className="display text-accent text-[clamp(22px,5vmin,72px)] mt-[3vmin]">{project.speaker}</div>
-        </>
-      ) : (
-        <h1 className="display text-[clamp(40px,11vmin,180px)] mt-[2vmin]">{texts.screen.nothingOnStage}</h1>
-      )}
-    </div>
-  )
-}
-
-function RevealMode({ project }: { project: ProjectTotals | null }) {
-  if (!project) {
-    return <div className="display text-muted text-[clamp(24px,6vmin,96px)] text-center">{texts.screen.noProjectChosen}</div>
-  }
-  return (
-    <div className="text-center max-w-[92vw]">
-      <h2 className="display text-[clamp(24px,6vmin,96px)] leading-[0.95]">{project.name}</h2>
-      <div className="text-muted display text-[clamp(16px,3vmin,44px)] mt-[3vmin]">{texts.screen.revealTitle}</div>
-      <CountUp
-        key={project.id}
-        value={project.amount}
-        initial={0}
-        duration={1800}
-        format={formatMoney}
-        className="block display text-accent text-[clamp(48px,17vmin,300px)] leading-none mt-[1vmin]"
-      />
-      <div className="display text-[clamp(20px,4.5vmin,64px)] mt-[3vmin]">{plural(project.investors, texts.screen.investors)}</div>
-    </div>
-  )
-}
-
-function OverviewMode({ rows }: { rows: ProjectTotals[] }) {
+function OverviewMode({ rows, votingOpen }: { rows: ProjectTotals[]; votingOpen: boolean }) {
   const max = Math.max(1, ...rows.map((r) => r.amount))
   if (rows.length === 0) {
     return <div className="display text-muted text-[clamp(24px,6vmin,96px)]">{texts.screen.noOpenProjects}</div>
@@ -119,17 +73,24 @@ function OverviewMode({ rows }: { rows: ProjectTotals[] }) {
   return (
     <div className="w-full max-w-[1600px] flex flex-col gap-[2.5vmin]">
       <h1 className="display text-muted text-[clamp(18px,3.5vmin,48px)]">{texts.screen.overviewTitle}</h1>
-      {rows.map((r) => (
-        <div key={r.id}>
-          <div className="flex items-baseline justify-between gap-4">
-            <span className="display text-[clamp(18px,4.2vmin,64px)] leading-none truncate">{r.name}</span>
-            <CountUp value={r.amount} duration={800} format={formatMoney} className="display text-accent text-[clamp(20px,5vmin,72px)] leading-none shrink-0" />
+      {rows.map((r, i) => {
+        const isWinner = !votingOpen && i === 0
+        return (
+          <div key={r.id} className={isWinner ? 'rounded-[1vmin] outline outline-1 outline-accent/70 p-[1.5vmin] -m-[1.5vmin]' : ''}>
+            {isWinner && <div className="display text-accent text-[clamp(12px,2vmin,28px)] mb-[0.5vmin]">{texts.screen.winner}</div>}
+            <div className="flex items-baseline justify-between gap-4">
+              <span className="display text-[clamp(18px,4.2vmin,64px)] leading-none truncate">{r.name}</span>
+              <CountUp value={r.amount} duration={800} format={formatMoney} className="display text-accent text-[clamp(20px,5vmin,72px)] leading-none shrink-0" />
+            </div>
+            <div className="flex items-center gap-[2vmin] mt-[1vmin]">
+              <div className="flex-1 h-[clamp(14px,3.5vmin,52px)] bg-line rounded-[0.6vmin] overflow-hidden">
+                <div className="h-full bg-accent transition-[width] duration-700 ease-out" style={{ width: `${Math.max(1.5, (r.amount / max) * 100)}%` }} />
+              </div>
+              <span className="text-muted text-[clamp(11px,1.8vmin,24px)] shrink-0 w-[16vmin] text-right">{plural(r.investors, texts.screen.investors)}</span>
+            </div>
           </div>
-          <div className="h-[clamp(14px,3.5vmin,52px)] bg-line rounded-[0.6vmin] mt-[1vmin] overflow-hidden">
-            <div className="h-full bg-accent transition-[width] duration-700 ease-out" style={{ width: `${Math.max(1.5, (r.amount / max) * 100)}%` }} />
-          </div>
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }

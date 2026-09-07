@@ -1,15 +1,15 @@
-// Переключатели шоу: регистрация, голосование, режим экрана, проект на сцене и для раскрытия.
+// Переключатели шоу: регистрация, голосование, что показывает экран (QR или общий расклад).
 import { texts } from '@shared/texts'
 import type { AdminOverview, ScreenMode } from '@shared/types'
 import { Button } from '../../components/Button'
 import { Card } from '../../components/Card'
 import { ConfirmButton } from '../../components/ConfirmButton'
-import { Label, Select } from '../../components/Field'
+import { Label } from '../../components/Field'
 import { Toggle } from '../../components/Toggle'
 import { api } from '../../lib/api'
 import type { Apply } from '../AdminPage'
 
-const modes: ScreenMode[] = ['qr', 'current', 'reveal', 'overview']
+const modes: ScreenMode[] = ['qr', 'overview']
 
 export function ShowControls({ o, apply }: { o: AdminOverview; apply: Apply }) {
   const show = o.show
@@ -17,7 +17,7 @@ export function ShowControls({ o, apply }: { o: AdminOverview; apply: Apply }) {
 
   return (
     <Card title={texts.admin.showSection}>
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-end gap-4">
         <div className="flex flex-col gap-1">
           <Label>{texts.admin.registration}</Label>
           <Toggle
@@ -39,38 +39,13 @@ export function ShowControls({ o, apply }: { o: AdminOverview; apply: Apply }) {
 
       <div className="mt-5">
         <Label>{texts.admin.screenMode}</Label>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 gap-2">
           {modes.map((m) => (
             <Button key={m} variant={show.screen_mode === m ? 'primary' : 'subtle'} onClick={() => update({ screen_mode: m })}>
               {texts.admin.screenModes[m]}
             </Button>
           ))}
         </div>
-      </div>
-
-      <div className="grid sm:grid-cols-2 gap-3 mt-5">
-        <label>
-          <Label>{texts.admin.currentProject}</Label>
-          <Select value={show.current_project_id ?? ''} onChange={(e) => update({ current_project_id: e.target.value || null })}>
-            <option value="">{texts.admin.noneSelected}</option>
-            {o.projects.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.position}. {p.name}
-              </option>
-            ))}
-          </Select>
-        </label>
-        <label>
-          <Label>{texts.admin.revealProject}</Label>
-          <Select value={show.reveal_project_id ?? ''} onChange={(e) => update({ reveal_project_id: e.target.value || null })}>
-            <option value="">{texts.admin.noneSelected}</option>
-            {o.projects.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.position}. {p.name} {p.is_open ? '' : `(${texts.common.closed})`}
-              </option>
-            ))}
-          </Select>
-        </label>
       </div>
     </Card>
   )
