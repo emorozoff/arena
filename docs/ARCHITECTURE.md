@@ -55,8 +55,11 @@ Arena/
         ResultsPage.tsx  /screen/results
         AdminPage.tsx    /admin
       components/        кнопки, плашка «нет связи», счётчик-анимация
-      lib/api.ts         все запросы к серверу в одном месте
+      lib/api.ts         все запросы к настоящему серверу в одном месте
+      lib/api.mock.ts    игрушечный сервер внутри браузера для прототипа (D16): та же форма данных, зал из ~100 ботов
       lib/live.ts        подписка на SSE + страховочный опрос
+  demo/
+    arena-demo.html      прототип одним файлом для заказчика — результат `npm run build:demo`
   scripts/
     loadtest.ts          150 виртуальных зрителей
   data/
@@ -74,11 +77,6 @@ show_state  (ровно одна строка, id = 1)
   screen_mode            'qr' | 'current' | 'reveal' | 'overview'
   current_project_id     id проекта на сцене или NULL
   reveal_project_id      id проекта для раскрытия или NULL
-  show_totals_to_guests  0/1 — общие суммы зрителям во время голосования (по умолчанию выкл)
-  results_visible_to_guests 0/1 — итоги на телефонах после закрытия, включает ведущий кнопкой (D11)
-  reveal_amount          снимок суммы для режима «раскрытие» (D12)
-  reveal_investors       снимок числа инвесторов для режима «раскрытие» (D12)
-  reveal_at              когда сделан снимок
   default_budget         1000000
   updated_at
 
@@ -136,10 +134,17 @@ action_log
 - `POST /api/admin/show { ...поля show_state }` — переключатели
 - `GET  /api/admin/tickets`, `POST /api/admin/tickets/import`, `POST /api/admin/tickets/:number/release`
 - `POST /api/admin/tickets/generate { count }` — сгенерировать коды (D13), `GET /api/admin/tickets/export` — скачать список текстом
-- `POST /api/admin/reveal { project_id }` — сделать снимок суммы для режима «раскрытие» (D12)
 - `POST /api/admin/seed-demo` — заполнить тестовыми проектами (только для демо и репетиций, в «опасной зоне»)
 - `POST /api/admin/reset { scope: 'allocations' | 'all', confirm: 'СБРОСИТЬ' }`
 - `GET  /api/screen/state` — режим экрана + агрегаты (не чаще раза в секунду)
+
+## Два «сервера» для одного интерфейса (D16)
+
+Страницы в `web/` не знают, с кем разговаривают: они зовут функции из `lib/api.ts` (`join`, `getMe`, `allocate`, `adminOverview`, ...). Есть две реализации с одинаковыми функциями:
+- `api.ts` — настоящие HTTP-запросы к Node-серверу. Используется в `npm run dev` и в бою.
+- `api.mock.ts` — всё в памяти браузера: состояние шоу, 100 ботов-зрителей, которые раз в секунду двигают деньги. Используется только в сборке прототипа `npm run build:demo`.
+
+Сборка прототипа складывает всё (скрипты, стили, картинки) в один файл `demo/arena-demo.html`. Роли переключаются полоской наверху: Зритель / Ведущий / Экран. Навигация по `#hash`, потому что у файла нет сервера. На странице написано, что данные ненастоящие.
 
 ## Как запускается (D14)
 
