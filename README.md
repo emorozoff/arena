@@ -7,8 +7,11 @@
 - [DECISIONS.md](docs/DECISIONS.md) — решения и открытые вопросы
 - [ARCHITECTURE.md](docs/ARCHITECTURE.md) — устройство системы
 - [ROADMAP.md](docs/ROADMAP.md) — план и статус этапов
+- [DESIGN.md](docs/DESIGN.md) — оформление
 - [SHOW_DAY.md](docs/SHOW_DAY.md) — чек-лист дня шоу
 
 Правила работы для Claude Code — в [CLAUDE.md](CLAUDE.md).
 
-Запуск: появится после выбора стека (этап 1).
+Прототип для заказчика (после этапа 1): https://emorozoff.github.io/arena/
+
+Запуск: появится на этапе 1.
