@@ -21,7 +21,10 @@ export default defineConfig({
     emptyOutDir: true,
   },
   server: {
-    // В разработке страницы отдаёт Vite, а запросы к /api уходят на сервер Node (порт 3000)
+    // Страницы всегда на 5173. Если порт занят — Vite скажет об этом, а не уйдёт молча на другой порт
+    port: 5173,
+    strictPort: true,
+    // В разработке страницы отдаёт Vite, а запросы к /api уходят на сервер Node (порт из .env, по умолчанию 3000)
     proxy: { '/api': { target: `http://localhost:${process.env.PORT ?? 3000}`, changeOrigin: false } },
   },
 })
