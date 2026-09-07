@@ -93,8 +93,8 @@ function AdminPanel() {
       <ShowControls o={o} apply={apply} />
       <ProjectsPanel o={o} apply={apply} />
       <MonitorPanel o={o} />
-      <TicketsPanel o={o} apply={apply} notify={setMessage} />
       <DangerZone apply={apply} notify={setMessage} />
+      <TicketsPanel o={o} apply={apply} notify={setMessage} />
 
       <Toast message={message} />
       <OfflineBanner online={live.online} />

@@ -1,8 +1,9 @@
-// Зрители и билеты: режим, формат, генерация, импорт, список с кнопкой «Отвязать».
+// Билеты: свёрнутый блок внизу пульта. Нужен до шоу (создать коды) и если зритель потерял доступ (отвязать).
+// Формат номера (длина, символы) задаётся в shared/config.ts, в админке не меняется (решение D18).
 import { useState } from 'react'
 import { formatMoney } from '@shared/format'
 import { texts } from '@shared/texts'
-import type { AdminOverview, AdminTicket, TicketChars, TicketMode } from '@shared/types'
+import type { AdminOverview, AdminTicket, TicketMode } from '@shared/types'
 import { Button } from '../../components/Button'
 import { Card } from '../../components/Card'
 import { Input, Label, Select, Textarea } from '../../components/Field'
@@ -13,15 +14,30 @@ import type { Apply } from '../AdminPage'
 const PAGE = 30
 
 export function TicketsPanel({ o, apply, notify }: { o: AdminOverview; apply: Apply; notify: (m: string) => void }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <Card>
+      <div className="flex items-center justify-between gap-3">
+        <div>
+          <h2 className="display text-2xl">{texts.admin.ticketsSection}</h2>
+          <p className="text-xs text-muted mt-1">{texts.admin.ticketsWhy}</p>
+        </div>
+        <Button variant="subtle" size="sm" onClick={() => setOpen((v) => !v)}>
+          {open ? texts.admin.ticketsHide : texts.admin.ticketsShow}
+        </Button>
+      </div>
+      {open && <TicketsBody o={o} apply={apply} notify={notify} />}
+    </Card>
+  )
+}
+
+function TicketsBody({ o, apply, notify }: { o: AdminOverview; apply: Apply; notify: (m: string) => void }) {
   const tickets = useLive(() => api.adminTickets(), ['show', 'totals'])
   const [count, setCount] = useState(120)
   const [output, setOutput] = useState('')
   const [importText, setImportText] = useState('')
   const [search, setSearch] = useState('')
   const [limit, setLimit] = useState(PAGE)
-  const show = o.show
-
-  const update = (patch: Partial<AdminOverview['show']>) => void apply(() => api.adminUpdateShow(patch))
 
   const generate = async () => {
     const codes = await api.adminGenerateTickets(count)
@@ -30,11 +46,18 @@ export function TicketsPanel({ o, apply, notify }: { o: AdminOverview; apply: Ap
     void tickets.refresh()
   }
 
-  const exportAll = () => {
-    setOutput((tickets.data ?? []).map((t) => t.number).join('\n'))
+  const copyAll = async () => {
+    const text = (tickets.data ?? []).map((t) => t.number).join('\n')
+    setOutput(text)
+    try {
+      await navigator.clipboard.writeText(text)
+      notify(texts.common.copied)
+    } catch {
+      // буфер обмена недоступен — номера видны в поле ниже
+    }
   }
 
-  const copy = async () => {
+  const copyOutput = async () => {
     try {
       await navigator.clipboard.writeText(output)
       notify(texts.common.copied)
@@ -59,53 +82,44 @@ export function TicketsPanel({ o, apply, notify }: { o: AdminOverview; apply: Ap
   const list = (tickets.data ?? []).filter((t) => !search || t.number.includes(search.trim().toUpperCase()))
 
   return (
-    <Card title={texts.admin.guestsSection}>
-      <div className="grid sm:grid-cols-3 gap-3">
+    <div className="mt-4 flex flex-col gap-4">
+      <div className="grid sm:grid-cols-2 gap-3">
         <label>
           <Label>{texts.admin.ticketMode}</Label>
-          <Select value={show.ticket_mode} onChange={(e) => update({ ticket_mode: e.target.value as TicketMode })}>
+          <Select value={o.show.ticket_mode} onChange={(e) => void apply(() => api.adminUpdateShow({ ticket_mode: e.target.value as TicketMode }))}>
             <option value="free">{texts.admin.ticketModes.free}</option>
             <option value="whitelist">{texts.admin.ticketModes.whitelist}</option>
           </Select>
         </label>
-        <label>
-          <Label>{`${texts.admin.ticketFormat}: ${texts.admin.ticketLength}`}</Label>
-          <Input type="number" min={3} max={10} value={show.ticket_length} onChange={(e) => update({ ticket_length: Math.max(3, Math.min(10, Number(e.target.value) || 4)) })} />
-        </label>
-        <label>
-          <Label>{texts.admin.ticketCharsLabel}</Label>
-          <Select value={show.ticket_chars} onChange={(e) => update({ ticket_chars: e.target.value as TicketChars })}>
-            <option value="digits">{texts.admin.ticketCharsOptions.digits}</option>
-            <option value="letters_digits">{texts.admin.ticketCharsOptions.letters_digits}</option>
-          </Select>
-        </label>
+        <div className="flex items-end gap-2">
+          <label className="w-24">
+            <Label>{texts.admin.generateCount}</Label>
+            <Input type="number" min={1} max={2000} value={count} onChange={(e) => setCount(Number(e.target.value) || 0)} />
+          </label>
+          <Button variant="subtle" onClick={() => void generate()} disabled={count < 1}>
+            {texts.admin.generateTickets}
+          </Button>
+        </div>
       </div>
 
-      <div className="flex flex-wrap items-end gap-2 mt-4">
-        <label className="w-28">
-          <Label>{texts.admin.generateCount}</Label>
-          <Input type="number" min={1} max={2000} value={count} onChange={(e) => setCount(Number(e.target.value) || 0)} />
-        </label>
-        <Button variant="subtle" onClick={() => void generate()} disabled={count < 1}>
-          {texts.admin.generateTickets}
-        </Button>
-        <Button variant="subtle" onClick={exportAll} disabled={!tickets.data?.length}>
+      <div className="flex flex-wrap items-center gap-2">
+        <Button variant="subtle" size="sm" onClick={() => void copyAll()} disabled={!tickets.data?.length}>
           {texts.admin.exportTickets}
         </Button>
-        <span className="text-sm text-muted ml-auto">
+        <span className="text-sm text-muted">
           {o.tickets_in_list} {texts.admin.ticketsInList}
         </span>
       </div>
       {output && (
-        <div className="mt-2 flex flex-col gap-2">
+        <div className="flex flex-col gap-2">
           <Textarea value={output} readOnly />
-          <Button variant="subtle" size="sm" onClick={() => void copy()} className="self-start">
+          <Button variant="subtle" size="sm" onClick={() => void copyOutput()} className="self-start">
             {texts.common.copy}
           </Button>
         </div>
       )}
 
-      <div className="mt-4">
+      <div>
         <Label>{texts.admin.importTickets}</Label>
         <Textarea value={importText} onChange={(e) => setImportText(e.target.value)} placeholder={texts.admin.importPlaceholder} />
         <Button variant="subtle" size="sm" className="mt-2" disabled={!importText.trim()} onClick={() => void doImport()}>
@@ -113,7 +127,7 @@ export function TicketsPanel({ o, apply, notify }: { o: AdminOverview; apply: Ap
         </Button>
       </div>
 
-      <div className="mt-5">
+      <div>
         <div className="flex items-center justify-between gap-3 mb-2">
           <span className="display text-xl">{texts.admin.ticketsList}</span>
           <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={texts.admin.ticketSearch} className="h-10 max-w-48" />
@@ -129,7 +143,7 @@ export function TicketsPanel({ o, apply, notify }: { o: AdminOverview; apply: Ap
           </Button>
         )}
       </div>
-    </Card>
+    </div>
   )
 }
 

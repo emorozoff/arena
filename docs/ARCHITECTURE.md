@@ -75,7 +75,8 @@ show_state  (ровно одна строка, id = 1)
   registration_open      0/1
   voting_open            0/1
   ticket_mode            'free' | 'whitelist'
-  ticket_format          текст: регулярное выражение для номера билета
+  ticket_length          длина номера билета — берётся из shared/config.ts, в админке не меняется (D18)
+  ticket_chars           'digits' | 'letters_digits' — то же
   screen_mode            'qr' | 'current' | 'reveal' | 'overview'
   current_project_id     id проекта на сцене или NULL
   reveal_project_id      id проекта для раскрытия или NULL
