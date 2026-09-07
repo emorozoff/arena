@@ -1,10 +1,11 @@
-# Публикация прототипа на GitHub Pages при каждом пуше в main (решение D16).
+# Публикация прототипа на GitHub Pages при каждом пуше в ветку demo (решение D16).
+# main — разработка, на демку не влияет. Обновить демку: влить main в demo и запушить.
 # Адрес: https://emorozoff.github.io/arena/
 name: Прототип на GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: [demo]
   workflow_dispatch:
 
 permissions:

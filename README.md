@@ -12,7 +12,9 @@
 
 Правила работы для Claude Code — в [CLAUDE.md](CLAUDE.md).
 
-Прототип для заказчика: **https://emorozoff.github.io/arena/** (открывается с телефона; данные ненастоящие, зал из ботов).
+Прототип для заказчика: **https://emorozoff.github.io/arena/** (открывается с телефона; данные ненастоящие, зал из ботов). Публикуется из ветки `demo`.
+
+Боевой адрес (после этапа 7): https://unicorn-arena.emorozoff.ru
 Тот же прототип одним файлом: [demo/arena-demo.html](demo/arena-demo.html).
 
 ## Запуск на своём компьютере
