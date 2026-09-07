@@ -78,6 +78,7 @@ show_state  (ровно одна строка, id = 1)
   ticket_length          длина номера билета — берётся из shared/config.ts, в админке не меняется (D18)
   ticket_chars           'digits' | 'letters_digits' — то же
   screen_mode            'qr' | 'overview' (D20)
+  revealed_count         финал: сколько мест показано на экране, с последнего (D21)
   default_budget         1000000
   updated_at
 
@@ -137,7 +138,7 @@ action_log
 - `POST /api/admin/tickets/generate { count }` — сгенерировать коды (D13), `GET /api/admin/tickets/export` — скачать список текстом
 - `POST /api/admin/seed-demo` — заполнить тестовыми проектами (только для демо и репетиций, в «опасной зоне»)
 - `POST /api/admin/reset { scope: 'allocations' | 'all', confirm: 'СБРОСИТЬ' }`
-- `GET  /api/screen/state` — режим экрана (QR или расклад) + суммы по открытым проектам (не чаще раза в секунду)
+- `GET  /api/screen/state` — режим экрана (QR или расклад) + суммы по открытым проектам (не чаще раза в секунду). После закрытия голосования — только показанные ведущим места (D21)
 
 ## Два «сервера» для одного интерфейса (D16)
 

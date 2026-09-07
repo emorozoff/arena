@@ -16,7 +16,7 @@ export function ConfirmButton({
   confirmText?: string
   onConfirm: () => void
   variant?: 'danger' | 'ghost' | 'subtle' | 'primary'
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'xs' | 'sm' | 'md' | 'lg'
   className?: string
   disabled?: boolean
 }) {

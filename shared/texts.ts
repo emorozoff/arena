@@ -73,6 +73,7 @@ export const texts = {
     noOpenProjects: 'Ждём первый проект',
     votingClosed: 'Голосование закрыто',
     winner: 'Победитель',
+    finaleTitle: 'Итоги голосования',
   },
 
   admin: {
@@ -95,14 +96,22 @@ export const texts = {
     reopenVoting: 'Открыть голосование снова',
     closeVotingConfirm: 'Все кнопки у зрителей заблокируются. Нажмите ещё раз, чтобы закрыть.',
 
+    finaleSection: 'Финал',
+    finaleHint: 'Места появляются на экране по одному, с последнего. Победитель — последним. Экран сам переключится на общий расклад.',
+    revealNext: 'Показать следующего',
+    revealReset: 'Скрыть всех',
+    revealAll: 'Показать всех',
+    revealProgress: (shown: number, total: number) => `Показано ${shown} из ${total}`,
+    revealDone: 'Все места показаны',
+
     projectsSection: 'Проекты',
     projectName: 'Название',
     projectSpeaker: 'Спикер',
     addProject: 'Добавить проект',
     openProject: 'Открыть',
-    closeProject: 'Закрыть',
+    closeProject: 'Убрать и вернуть деньги',
     closeProjectConfirm: (investors: number, amount: string) =>
-      `Вложения ${investors} зрителей на сумму ${amount} будут возвращены. Нажмите ещё раз, чтобы закрыть проект.`,
+      `Проект исчезнет с телефонов, вложения ${investors} зрителей на сумму ${amount} вернутся им. Это не завершение голосования! Нажмите ещё раз, если уверены.`,
     deleteProjectConfirm: 'Проект и все вложения в него будут удалены. Нажмите ещё раз.',
     moveUp: 'Выше',
     moveDown: 'Ниже',

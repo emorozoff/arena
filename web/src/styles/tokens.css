@@ -43,3 +43,12 @@ button, a, input, select, textarea {
   letter-spacing: -0.01em;
   line-height: 0.95;
 }
+
+/* Новая строка на экране плавно появляется сверху */
+@keyframes row-appear {
+  from { opacity: 0; transform: translateY(-1.5vmin); }
+  to { opacity: 1; transform: none; }
+}
+.row-appear {
+  animation: row-appear 600ms ease-out;
+}

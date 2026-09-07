@@ -9,6 +9,7 @@ import { OfflineBanner, StatusDot, Toast } from '../components/Status'
 import { api, IS_DEMO } from '../lib/api'
 import { useLive } from '../lib/useLive'
 import { DangerZone } from './admin/DangerZone'
+import { FinalePanel } from './admin/FinalePanel'
 import { MonitorPanel } from './admin/MonitorPanel'
 import { ProjectsPanel } from './admin/ProjectsPanel'
 import { ShowControls } from './admin/ShowControls'
@@ -91,6 +92,7 @@ function AdminPanel() {
       </header>
 
       <ShowControls o={o} apply={apply} />
+      {!o.show.voting_open && <FinalePanel o={o} apply={apply} />}
       <ProjectsPanel o={o} apply={apply} />
       <MonitorPanel o={o} />
       <DangerZone apply={apply} notify={setMessage} />

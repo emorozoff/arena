@@ -79,15 +79,8 @@ function ProjectRow({ p, isFirst, isLast, apply }: { p: ProjectTotals; isFirst: 
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        {p.is_open ? (
-          <ConfirmButton
-            size="sm"
-            label={texts.admin.closeProject}
-            confirmText={texts.admin.closeProjectConfirm(p.investors, formatMoney(p.amount))}
-            onConfirm={() => void apply(() => api.adminCloseProject(p.id))}
-          />
-        ) : (
+      <div className="flex flex-wrap items-center gap-2">
+        {!p.is_open && (
           <Button size="sm" onClick={() => void apply(() => api.adminOpenProject(p.id))}>
             {texts.admin.openProject}
           </Button>
@@ -112,7 +105,18 @@ function ProjectRow({ p, isFirst, isLast, apply }: { p: ProjectTotals; isFirst: 
             {texts.common.edit}
           </Button>
         )}
-        <ConfirmButton size="sm" variant="ghost" label={texts.common.delete} confirmText={texts.admin.deleteProjectConfirm} onConfirm={() => void apply(() => api.adminDeleteProject(p.id))} className="ml-auto" />
+        <div className="flex flex-wrap items-center gap-2 ml-auto">
+          {p.is_open && (
+            <ConfirmButton
+              size="xs"
+              variant="danger"
+              label={`⚠ ${texts.admin.closeProject}`}
+              confirmText={texts.admin.closeProjectConfirm(p.investors, formatMoney(p.amount))}
+              onConfirm={() => void apply(() => api.adminCloseProject(p.id))}
+            />
+          )}
+          <ConfirmButton size="xs" variant="ghost" label={texts.common.delete} confirmText={texts.admin.deleteProjectConfirm} onConfirm={() => void apply(() => api.adminDeleteProject(p.id))} />
+        </div>
       </div>
     </li>
   )

@@ -103,6 +103,7 @@ function freshShow(): ShowState {
     ticket_length: config.ticketLength,
     ticket_chars: config.ticketChars,
     screen_mode: 'qr',
+    revealed_count: 0,
     default_budget: config.defaultBudget,
   }
 }
@@ -126,7 +127,11 @@ function loadStore(): Store {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (raw) {
       const parsed = JSON.parse(raw) as Store
-      if (parsed && parsed.show && Array.isArray(parsed.projects) && Array.isArray(parsed.guests)) return parsed
+      if (parsed && parsed.show && Array.isArray(parsed.projects) && Array.isArray(parsed.guests)) {
+        // Новые поля состояния получают значения по умолчанию, старое сохранение не ломается
+        parsed.show = { ...freshShow(), ...parsed.show }
+        return parsed
+      }
     }
   } catch {
     // localStorage недоступен или испорчен — начинаем заново
@@ -448,15 +453,21 @@ export const mockApi: Api = {
 
   async getScreen(): Promise<ScreenState> {
     const show = store.show
+    const ranked = sortedProjects()
+      .filter((p) => p.is_open)
+      .map(totals)
+      .sort((a, b) => b.amount - a.amount || a.position - b.position)
+    // Финал (D21): после закрытия голосования экран получает только уже показанные места —
+    // последние N строк рейтинга. Непоказанные на экран не попадают вообще.
+    const revealed = Math.min(show.revealed_count, ranked.length)
+    const finale = show.voting_open ? null : { revealed, total: ranked.length, max_amount: ranked[0]?.amount ?? 0 }
     return {
       mode: show.screen_mode,
       voting_open: show.voting_open,
       registered: store.guests.length,
       join_url: joinUrl(),
-      overview: sortedProjects()
-        .filter((p) => p.is_open)
-        .map(totals)
-        .sort((a, b) => b.amount - a.amount || a.position - b.position),
+      overview: finale ? ranked.slice(ranked.length - revealed) : ranked,
+      finale,
     }
   },
 
@@ -476,7 +487,14 @@ export const mockApi: Api = {
     await likeNetwork()
     const before = { ...store.show }
     Object.assign(store.show, patch)
-    if (before.voting_open !== store.show.voting_open) log('voting', store.show.voting_open ? 'Голосование открыто' : 'Голосование закрыто')
+    // Смена состояния голосования всегда начинает финал заново
+    if (before.voting_open !== store.show.voting_open) {
+      store.show.revealed_count = 0
+      log('voting', store.show.voting_open ? 'Голосование открыто' : 'Голосование закрыто')
+    }
+    const openCount = store.projects.filter((p) => p.is_open).length
+    store.show.revealed_count = Math.max(0, Math.min(openCount, Math.floor(store.show.revealed_count)))
+    if (before.revealed_count !== store.show.revealed_count) log('reveal', `Показано мест: ${store.show.revealed_count}`)
     if (before.registration_open !== store.show.registration_open) log('registration', store.show.registration_open ? 'Регистрация открыта' : 'Регистрация закрыта')
     touch()
     emitShow()

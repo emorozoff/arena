@@ -1,6 +1,8 @@
 // Экран на сцену: тёмный фон, огромные цифры. Два состояния переключает ведущий:
-// «QR-код» до начала и «Общий расклад» на весь вечер. Строки появляются по мере открытия проектов,
-// порядок — по сумме. После закрытия голосования у первой строки лёгкая пометка «Победитель».
+// «QR-код» до начала и «Общий расклад». Пока голосование открыто, в раскладе видны все открытые
+// проекты по сумме. После закрытия начинается финал (D21): сервер присылает только показанные
+// ведущим места, они появляются по одному с последнего, новая строка всегда сверху. Победитель —
+// последним, с лёгкой пометкой.
 // При обрыве связи показывает последнее известное состояние. Никаких ошибок на проекторе.
 import { useEffect, useRef, useState } from 'react'
 import QRCode from 'qrcode'
@@ -30,7 +32,7 @@ export function ScreenPage() {
         </div>
       </div>
       <div className="flex-1 flex items-center justify-center">
-        {s && (s.mode === 'qr' ? <QrMode s={s} /> : <OverviewMode rows={s.overview} votingOpen={s.voting_open} />)}
+        {s && (s.mode === 'qr' ? <QrMode s={s} /> : <OverviewMode rows={s.overview} finale={s.finale} />)}
       </div>
     </div>
   )
@@ -65,22 +67,30 @@ function QrMode({ s }: { s: ScreenState }) {
   )
 }
 
-function OverviewMode({ rows, votingOpen }: { rows: ProjectTotals[]; votingOpen: boolean }) {
-  const max = Math.max(1, ...rows.map((r) => r.amount))
+function OverviewMode({ rows, finale }: { rows: ProjectTotals[]; finale: ScreenState['finale'] }) {
+  // В финале полосы считаются от суммы победителя: у последнего места полоса короткая, у победителя — во всю ширину
+  const max = Math.max(1, finale ? finale.max_amount : 0, ...rows.map((r) => r.amount))
+  const winnerShown = finale !== null && finale.revealed >= finale.total && finale.total > 0
+  const title = finale ? texts.screen.finaleTitle : texts.screen.overviewTitle
+
   if (rows.length === 0) {
-    return <div className="display text-muted text-[clamp(24px,6vmin,96px)]">{texts.screen.noOpenProjects}</div>
+    return (
+      <div className="display text-muted text-[clamp(24px,6vmin,96px)] text-center">
+        {finale ? title : texts.screen.noOpenProjects}
+      </div>
+    )
   }
   return (
     <div className="w-full max-w-[1600px] flex flex-col gap-[2.5vmin]">
-      <h1 className="display text-muted text-[clamp(18px,3.5vmin,48px)]">{texts.screen.overviewTitle}</h1>
+      <h1 className="display text-muted text-[clamp(18px,3.5vmin,48px)]">{title}</h1>
       {rows.map((r, i) => {
-        const isWinner = !votingOpen && i === 0
+        const isWinner = winnerShown && i === 0
         return (
-          <div key={r.id} className={isWinner ? 'rounded-[1vmin] outline outline-1 outline-accent/70 p-[1.5vmin] -m-[1.5vmin]' : ''}>
+          <div key={r.id} className={`row-appear ${isWinner ? 'rounded-[1vmin] outline outline-1 outline-accent/70 p-[1.5vmin] -m-[1.5vmin]' : ''}`}>
             {isWinner && <div className="display text-accent text-[clamp(12px,2vmin,28px)] mb-[0.5vmin]">{texts.screen.winner}</div>}
             <div className="flex items-baseline justify-between gap-4">
               <span className="display text-[clamp(18px,4.2vmin,64px)] leading-none truncate">{r.name}</span>
-              <CountUp value={r.amount} duration={800} format={formatMoney} className="display text-accent text-[clamp(20px,5vmin,72px)] leading-none shrink-0" />
+              <CountUp value={r.amount} initial={finale ? 0 : undefined} duration={finale ? 1400 : 800} format={formatMoney} className="display text-accent text-[clamp(20px,5vmin,72px)] leading-none shrink-0" />
             </div>
             <div className="flex items-center gap-[2vmin] mt-[1vmin]">
               <div className="flex-1 h-[clamp(14px,3.5vmin,52px)] bg-line rounded-[0.6vmin] overflow-hidden">
