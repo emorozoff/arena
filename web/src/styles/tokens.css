@@ -1,0 +1,45 @@
+/* Палитра и шрифты шоу (docs/DESIGN.md). Менять цвета — только здесь. */
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #0a0a0a;
+  --color-card: #111111;
+  --color-line: #222222;
+  --color-text: #ffffff;
+  --color-muted: #8a8a8a;
+  --color-accent: #ff3b0d;
+  --color-accent-hover: #ff5a2e;
+  --color-ok: #3ddc84;
+
+  --font-display: "Oswald", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+html {
+  background: var(--color-bg);
+  color: var(--color-text);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+}
+
+/* Кнопки на телефоне: без задержки нажатия и без зума по двойному тапу */
+button, a, input, select, textarea {
+  touch-action: manipulation;
+}
+
+/* Цифры денег одной ширины, чтобы счётчик не дёргался */
+.money {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Заголовки шоу: узкий шрифт, капслок */
+.display {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  line-height: 0.95;
+}

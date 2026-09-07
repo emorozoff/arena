@@ -12,6 +12,14 @@
 
 Правила работы для Claude Code — в [CLAUDE.md](CLAUDE.md).
 
-Прототип для заказчика (после этапа 1): https://emorozoff.github.io/arena/
+Прототип для заказчика: **https://emorozoff.github.io/arena/** (открывается с телефона; данные ненастоящие, зал из ботов).
+Тот же прототип одним файлом: [demo/arena-demo.html](demo/arena-demo.html).
 
-Запуск: появится на этапе 1.
+## Запуск на своём компьютере
+
+```bash
+npm install
+npm run dev
+```
+
+Откроется `http://localhost:5173`. В консоли будет и адрес в локальной сети — его можно открыть с телефона в той же Wi-Fi.

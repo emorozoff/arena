@@ -1,0 +1,32 @@
+{
+  "name": "arena-unicorns",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Арена Единорогов — зрительское голосование виртуальными деньгами для живого шоу",
+  "scripts": {
+    "dev": "vite --host",
+    "check": "tsc --noEmit",
+    "build": "vite build",
+    "build:pages": "VITE_API=mock vite build",
+    "build:demo": "VITE_API=mock SINGLE_FILE=1 vite build && mv demo/index.html demo/arena-demo.html",
+    "preview": "vite preview --host"
+  },
+  "dependencies": {
+    "qrcode": "^1.5.4",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^26.4.1",
+    "@types/qrcode": "^1.5.6",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.7",
+    "@vitejs/plugin-react": "^6.1.1",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2",
+    "vite": "^8.2.2",
+    "vite-plugin-singlefile": "^2.3.3"
+  }
+}
