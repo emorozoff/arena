@@ -31,19 +31,23 @@ Arena/
     texts.ts             все надписи по-русски
     types.ts             формы данных, общие для сервера и фронта
   server/
-    index.ts             запуск сервера
-    db.ts                открытие базы, применение schema.sql
+    index.ts             запуск: API, SSE, раздача dist/, редиректы /join → /#/join
+    env.ts               настройки из .env: ADMIN_PASSWORD, PORT, PUBLIC_URL, DATA_DIR
+    db.ts                открытие data/arena.db, применение schema.sql, запись в лог
     schema.sql           таблицы
-    events.ts            SSE: кто подписан, рассылка сигналов
-    auth.ts              cookie зрителя и cookie админа
+    events.ts            SSE: подписчики, сигналы show/totals (totals — не чаще раза в секунду, только пульту и экрану)
+    auth.ts              токен зрителя (заголовок x-guest-token или cookie), сессия ведущего (cookie + таблица admin_sessions)
     routes/
+      helpers.ts         чтение JSON из запроса
       guest.ts           /api/join, /api/me, /api/allocate
-      admin.ts           /api/admin/...
-      screen.ts          /api/screen/...
+      admin.ts           /api/admin/... (вход, переключатели, проекты, билеты, сбросы)
+      screen.ts          /api/screen/state (только с сессией ведущего, D3)
     logic/
-      allocate.ts        единственное место, где меняются деньги
-      tickets.ts         проверка и захват билета
-      aggregates.ts      суммы по проектам для экрана
+      state.ts           чтение состояния и сборка ответов: show_state, проекты с суммами, состояние зрителя, экран
+      allocate.ts        единственное место, где меняются деньги — одна транзакция SQLite
+      tickets.ts         формат номера, вход по билету, передача билета (D4), генерация и импорт кодов
+  scripts/
+    dev.mjs              `npm run dev`: сервер + Vite одной командой
   web/
     index.html
     src/
@@ -81,6 +85,8 @@ show_state  (ровно одна строка, id = 1)
   revealed_count         финал: сколько мест показано на экране, с последнего (D21)
   default_budget         1000000
   updated_at
+
+admin_sessions  (сессии ведущего: id из cookie, created_at)
 
 tickets     (и whitelist, и захваченные билеты — одна таблица)
   number        PRIMARY KEY
@@ -123,22 +129,23 @@ action_log
 
 ## API (план)
 
-Зритель (по cookie `guest_token`):
-- `POST /api/join { ticket }` → выдаёт cookie; ошибки: `bad_format`, `not_found`, `taken`, `registration_closed`
-- `GET  /api/me` → состояние зрителя (D7)
-- `POST /api/allocate { project_id, amount }` → то же состояние (D2)
-- `GET  /api/events` → SSE-сигналы (D6)
+Зритель (токен устройства: заголовок `x-guest-token` из localStorage или cookie `guest_token` — сервер принимает любой):
+- `POST /api/join { ticket }` → состояние зрителя + `token`, ставит cookie; ошибки: `bad_format`, `not_found`, `taken`, `registration_closed`
+- `GET  /api/me` → состояние зрителя (D7); без токена — `not_joined` (401)
+- `POST /api/allocate { project_id, amount }` → то же состояние (D2); ошибки: `voting_closed`, `project_closed`, `negative`, `over_budget`
+- `GET  /api/events` → SSE-сигналы (D6): `hello` при подключении, `show` всем, `totals` только с сессией ведущего, `ping` раз в 25 с
 
-Админ и экран (по cookie `admin_session`):
-- `POST /api/admin/login { password }`
-- `GET  /api/admin/overview` — всё для мониторинга одним запросом
-- `GET/POST/PUT/DELETE /api/admin/projects` — проекты, порядок, открыть/закрыть
-- `POST /api/admin/show { ...поля show_state }` — переключатели
-- `GET  /api/admin/tickets`, `POST /api/admin/tickets/import`, `POST /api/admin/tickets/:number/release`
-- `POST /api/admin/tickets/generate { count }` — сгенерировать коды (D13), `GET /api/admin/tickets/export` — скачать список текстом
-- `POST /api/admin/seed-demo` — заполнить тестовыми проектами (только для демо и репетиций, в «опасной зоне»)
-- `POST /api/admin/reset { scope: 'allocations' | 'all', confirm: 'СБРОСИТЬ' }`
-- `GET  /api/screen/state` — режим экрана (QR или расклад) + суммы по открытым проектам (не чаще раза в секунду). После закрытия голосования — только показанные ведущим места (D21)
+Ведущий и экран (cookie `admin_session`, таблица `admin_sessions`):
+- `POST /api/admin/login { password }` → 200 или `unauthorized`; `GET /api/admin/session` → `{ logged_in }`; `POST /api/admin/logout`
+- `GET  /api/admin/overview` — всё для мониторинга одним запросом; каждое действие ниже тоже возвращает overview
+- `POST /api/admin/show { ...поля show_state }` — переключатели; сервер проверяет каждое поле, смена voting_open обнуляет revealed_count
+- `POST /api/admin/projects`, `PUT /api/admin/projects/:id`, `DELETE /api/admin/projects/:id`, `POST .../:id/move { direction }`, `POST .../:id/open`, `POST .../:id/close` (возвращает деньги, D5)
+- `GET  /api/admin/tickets`, `POST /api/admin/tickets/import { text }`, `POST /api/admin/tickets/generate { count }`, `POST /api/admin/tickets/:number/release`
+- `POST /api/admin/reset { scope: 'allocations' | 'all' }`, `POST /api/admin/seed-demo`
+- `GET  /api/screen/state` — режим экрана (QR или расклад) + суммы по открытым проектам. После закрытия голосования — только показанные ведущим места (D21). Без сессии ведущего — `unauthorized`, страница экрана показывает форму пароля (D3)
+- `GET  /api/health` — `{ ok, clients }` для проверки, что сервер жив
+
+Ошибки — всегда JSON `{ error: код }`: 401 для `unauthorized`/`not_joined`, 404 `not_found`, 409 `taken`, 400 остальные, 500 `unknown` без подробностей.
 
 ## Два «сервера» для одного интерфейса (D16)
 
@@ -154,7 +161,8 @@ action_log
 
 ## Как запускается (D14)
 
-- Демо и репетиции: `npm run dev` на Маке. Сервер печатает в консоль адрес в локальной сети (`http://192.168.x.x:3000`), телефоны в той же Wi-Fi открывают его.
+- Разработка: `npm run dev` на Маке — сервер (порт из `.env`, по умолчанию 3000) и Vite (5173, запросы `/api` проксирует серверу). Сервер печатает адреса в локальной сети для телефонов.
+- Как в бою: `npm run build && npm start` — один процесс раздаёт `dist/` и API. Настройки в `.env` (см. `.env.example`): `ADMIN_PASSWORD` обязателен.
 - Показать кому-то снаружи: `cloudflared tunnel --url http://localhost:3000` даёт временную публичную ссылку.
 - Боевой хостинг (этап 7): арендованный сервер Егора (Ubuntu 24.04, play2go, IP 2.26.80.53), адрес https://unicorn-arena.emorozoff.ru, Node под systemd, HTTPS через Caddy. Плюс план Б — тот же `npm start` на ноутбуке в зале.
 

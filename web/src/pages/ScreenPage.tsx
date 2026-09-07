@@ -13,12 +13,16 @@ import { CountUp } from '../components/CountUp'
 import { StatusDot } from '../components/Status'
 import { api } from '../lib/api'
 import { useLive } from '../lib/useLive'
+import { AdminLogin } from './AdminPage'
 
 export function ScreenPage() {
-  const { data, online } = useLive(() => api.getScreen(), ['show', 'totals'])
+  const { data, online, error, refresh } = useLive(() => api.getScreen(), ['show', 'totals'])
   const last = useRef<ScreenState | null>(null)
   if (data) last.current = data
   const s = last.current
+
+  // Экран закрыт паролем ведущего (D3): без сессии показываем форму входа, а не пустоту
+  if (!s && error === 'unauthorized') return <AdminLogin onDone={() => void refresh()} />
 
   return (
     <div className="min-h-[calc(100dvh-var(--demo-bar,0px))] bg-bg text-text flex flex-col p-[4vmin]">

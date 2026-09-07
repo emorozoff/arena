@@ -39,18 +39,21 @@
 - Мобильная вёрстка — приоритет для `/join` и `/app`. `/admin` и `/screen` — для ноутбука.
 
 ## Запуск
-Стек (D1): один Node-сервер (Hono + SQLite + SSE) и фронт React + Vite + Tailwind. Демо и репетиции идут на Маке Егора, телефоны в той же Wi-Fi (D14).
+Стек (D1): один Node-сервер (Hono + SQLite + SSE, папка `server/`) и фронт React + Vite + Tailwind (папка `web/`). Общие настройки, тексты и типы — в `shared/`.
 
 ```bash
-npm install          # один раз после клонирования
-npm run dev          # прототип на Маке: http://localhost:5173 (+ адрес в локальной сети для телефонов)
-npm run check        # проверка типов — гонять перед каждым коммитом
-npm run build:pages  # сборка прототипа для GitHub Pages → dist/
-npm run build:demo   # прототип одним файлом → demo/arena-demo.html
+npm install                 # один раз после клонирования
+cp .env.example .env        # и вписать ADMIN_PASSWORD (пароль пульта); .env в git не попадает
+npm run dev                 # разработка: сервер на порту 3000 + страницы на http://localhost:5173 (телефоны — по адресу Мака из консоли)
+npm run check               # проверка типов сервера и фронта — гонять перед каждым коммитом
+npm run build && npm start  # как в бою: собрать фронт в dist/ и запустить один сервер, который раздаёт всё сам
+npm run dev:demo            # прототип с игрушечным сервером (как на GitHub Pages)
+npm run build:pages         # сборка прототипа для GitHub Pages → dist/
+npm run build:demo          # прототип одним файлом → demo/arena-demo.html
 ```
+
+База — файл `data/arena.db` (в git не попадает). Порт занят — сервер напишет об этом по-русски; поменять `PORT` в `.env`.
 
 Прототип для заказчика: https://emorozoff.github.io/arena/ — собирается GitHub Actions из ветки `demo` (`.github/workflows/pages.yml`). Обновление демки: `git checkout demo && git merge main && git push && git checkout main` — только по команде Егора и только из состояния, прошедшего `npm run check` и сборку.
 
 Боевой адрес: https://unicorn-arena.emorozoff.ru (арендованный сервер Егора, D14–D15; настройка на этапе 7).
-
-Настоящий сервер (`server/`, команда `npm start`, переменные окружения) появится на этапе 2.

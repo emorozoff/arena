@@ -20,4 +20,8 @@ export default defineConfig({
     outDir: singleFile ? '../demo' : '../dist',
     emptyOutDir: true,
   },
+  server: {
+    // В разработке страницы отдаёт Vite, а запросы к /api уходят на сервер Node (порт 3000)
+    proxy: { '/api': { target: `http://localhost:${process.env.PORT ?? 3000}`, changeOrigin: false } },
+  },
 })

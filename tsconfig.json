@@ -12,5 +12,5 @@
     "noUnusedLocals": true,
     "paths": { "@shared/*": ["./shared/*"] }
   },
-  "include": ["web/src", "shared", "vite.config.ts"]
+  "include": ["web/src", "shared", "server", "vite.config.ts"]
 }

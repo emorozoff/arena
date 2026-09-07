@@ -139,7 +139,10 @@ function loadStore(): Store {
   return freshStore()
 }
 
-let store: Store = loadStore()
+// Включён только в сборке прототипа (VITE_API=mock); иначе не трогает хранилище и не запускает ботов
+const ENABLED = import.meta.env.VITE_API === 'mock'
+
+let store: Store = ENABLED ? loadStore() : freshStore()
 let dirty = false
 
 function save() {
@@ -183,14 +186,16 @@ function markTotalsChanged() {
 }
 
 // Раз в секунду: боты двигаются, суммы рассылаются не чаще раза в секунду, состояние сохраняется
-setInterval(() => {
-  tickBots()
-  if (totalsDirty) {
-    totalsDirty = false
-    listeners.totals.forEach((cb) => cb())
-  }
-  save()
-}, config.screenRefreshMs)
+if (ENABLED) {
+  setInterval(() => {
+    tickBots()
+    if (totalsDirty) {
+      totalsDirty = false
+      listeners.totals.forEach((cb) => cb())
+    }
+    save()
+  }, config.screenRefreshMs)
+}
 
 // ---------- Правила денег: единственное место, где меняются вложения ----------
 

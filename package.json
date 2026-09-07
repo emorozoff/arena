@@ -5,7 +5,10 @@
   "type": "module",
   "description": "Арена Единорогов — зрительское голосование виртуальными деньгами для живого шоу",
   "scripts": {
-    "dev": "vite --host",
+    "dev": "node scripts/dev.mjs",
+    "dev:demo": "VITE_API=mock vite --host",
+    "server": "tsx watch server/index.ts",
+    "start": "tsx server/index.ts",
     "check": "tsc --noEmit",
     "build": "vite build",
     "build:pages": "VITE_API=mock vite build",
@@ -13,18 +16,23 @@
     "preview": "vite preview --host"
   },
   "dependencies": {
+    "@hono/node-server": "^2.1.1",
+    "better-sqlite3": "^13.0.3",
+    "hono": "^4.13.7",
     "qrcode": "^1.5.4",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",
+    "@types/better-sqlite3": "^9.6.0",
     "@types/node": "^26.4.1",
     "@types/qrcode": "^1.5.6",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
     "@vitejs/plugin-react": "^6.1.1",
     "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.13",
     "typescript": "^7.0.2",
     "vite": "^8.2.2",
     "vite-plugin-singlefile": "^2.3.3"

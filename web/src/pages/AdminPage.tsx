@@ -27,7 +27,7 @@ export function AdminPage() {
   return <AdminPanel />
 }
 
-function AdminLogin({ onDone }: { onDone: () => void }) {
+export function AdminLogin({ onDone }: { onDone: () => void }) {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const submit = async (e: FormEvent) => {
