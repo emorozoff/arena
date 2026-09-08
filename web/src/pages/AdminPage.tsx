@@ -76,7 +76,7 @@ function AdminPanel() {
   if (!o) return <div className="min-h-dvh bg-bg" />
 
   return (
-    <div className="max-w-3xl mx-auto px-4 pt-6 pb-28 flex flex-col gap-4">
+    <div className="max-w-6xl mx-auto px-4 pt-6 pb-28 flex flex-col gap-4">
       <header className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
           <span className="display text-muted text-sm">{texts.common.showName}</span>
@@ -91,10 +91,15 @@ function AdminPanel() {
         {IS_DEMO && <p className="text-xs text-muted">{texts.demo.adminHint}</p>}
       </header>
 
-      <ShowControls o={o} apply={apply} />
-      {!o.show.voting_open && <FinalePanel o={o} apply={apply} />}
-      <ProjectsPanel o={o} apply={apply} />
-      <MonitorPanel o={o} />
+      {/* Телефон: одна колонка сверху вниз. Ноутбук (от 1024px): слева управление и мониторинг, справа проекты */}
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-start">
+        <div className="flex flex-col gap-4 lg:sticky lg:top-4">
+          <ShowControls o={o} apply={apply} />
+          {!o.show.voting_open && <FinalePanel o={o} apply={apply} />}
+          <MonitorPanel o={o} />
+        </div>
+        <ProjectsPanel o={o} apply={apply} />
+      </div>
       <DangerZone apply={apply} notify={setMessage} />
       <TicketsPanel o={o} apply={apply} notify={setMessage} />
 

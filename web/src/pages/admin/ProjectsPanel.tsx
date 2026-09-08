@@ -54,7 +54,7 @@ function ProjectRow({ p, isFirst, isLast, apply }: { p: ProjectTotals; isFirst: 
 
   return (
     <li className={`rounded-lg border p-3 flex flex-col gap-2 ${p.is_open ? 'border-accent/60' : 'border-line'}`}>
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-3 flex-1 min-w-0">
         <span className="display text-2xl text-muted w-8 shrink-0">{p.position}</span>
         <div className="flex-1 min-w-0">
           {editing ? (
@@ -64,8 +64,8 @@ function ProjectRow({ p, isFirst, isLast, apply }: { p: ProjectTotals; isFirst: 
             </div>
           ) : (
             <>
-              <div className="display text-xl truncate">{p.name}</div>
-              <div className="text-sm text-muted truncate">{p.speaker}</div>
+              <div className="display text-xl break-words">{p.name}</div>
+              <div className="text-sm text-muted break-words">{p.speaker}</div>
             </>
           )}
           <div className="text-xs mt-1 flex flex-wrap gap-x-3 gap-y-1">

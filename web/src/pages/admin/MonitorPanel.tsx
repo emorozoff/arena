@@ -8,7 +8,7 @@ export function MonitorPanel({ o }: { o: AdminOverview }) {
   const max = Math.max(1, ...o.projects.map((p) => p.amount))
   return (
     <Card title={texts.admin.monitorSection}>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+      <div className="grid grid-cols-2 gap-2">
         <Stat label={texts.admin.registeredGuests} value={String(o.registered)} />
         <Stat label={texts.admin.moneyAllocated} value={formatMoney(o.money_allocated)} />
         <Stat label={texts.admin.moneyFree} value={formatMoney(o.money_free)} />
