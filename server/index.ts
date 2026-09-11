@@ -50,6 +50,15 @@ for (const page of ['join', 'app', 'screen', 'admin']) {
   app.get(`/${page}`, (c) => c.redirect(`/#/${page}`))
 }
 
+// Кэш браузера: саму страницу (index.html) не кэшировать — после обновления сервера старая страница
+// ссылалась бы на удалённые файлы и показывала белый экран. Файлы в assets/ имеют уникальные имена,
+// их можно кэшировать надолго.
+app.use('/*', async (c, next) => {
+  await next()
+  if (c.req.path.startsWith('/assets/')) c.header('Cache-Control', 'public, max-age=31536000, immutable')
+  else if (!c.req.path.startsWith('/api/')) c.header('Cache-Control', 'no-cache')
+})
+
 // Собранный фронтенд из dist/
 app.use('/*', serveStatic({ root: env.webDir }))
 app.get('/*', serveStatic({ root: env.webDir, path: 'index.html' }))
