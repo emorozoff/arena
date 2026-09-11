@@ -354,6 +354,7 @@ function guestState(g: Guest): GuestState {
   }))
   return {
     ticket_number: g.ticket_number,
+    sector: null,
     budget: g.budget,
     free: g.budget - allocatedTotal(g),
     voting_open: store.show.voting_open,
@@ -585,6 +586,7 @@ export const mockApi: Api = {
       const status: AdminTicket['status'] = !t.guest_id ? 'free' : t.released ? 'released' : 'claimed'
       return {
         number: t.number,
+        sector: null,
         status,
         claimed_at: t.claimed_at,
         allocated: guest ? allocatedTotal(guest) : 0,

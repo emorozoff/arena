@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS show_state (
 
 CREATE TABLE IF NOT EXISTS tickets (
   number TEXT PRIMARY KEY,
+  sector TEXT,
   guest_id TEXT,
   claimed_at TEXT,
   released INTEGER NOT NULL DEFAULT 0

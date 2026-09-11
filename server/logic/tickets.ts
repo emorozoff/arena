@@ -76,34 +76,47 @@ export const joinWithTicket = db.transaction((raw: string): GuestRow => {
 export function listTickets(): AdminTicket[] {
   const rows = db
     .prepare(
-      `SELECT t.number, t.guest_id, t.claimed_at, t.released, g.budget,
+      `SELECT t.number, t.sector, t.guest_id, t.claimed_at, t.released, g.budget,
               (SELECT COALESCE(SUM(a.amount), 0) FROM allocations a WHERE a.guest_id = t.guest_id) AS allocated
        FROM tickets t LEFT JOIN guests g ON g.id = t.guest_id`,
     )
-    .all() as (TicketRow & { budget: number | null; allocated: number })[]
+    .all() as (TicketRow & { sector: string | null; budget: number | null; allocated: number })[]
   const order: Record<AdminTicket['status'], number> = { claimed: 0, released: 1, free: 2 }
   return rows
     .map((t) => {
       const status: AdminTicket['status'] = !t.guest_id ? 'free' : t.released === 1 ? 'released' : 'claimed'
-      return { number: t.number, status, claimed_at: t.claimed_at, allocated: t.allocated, budget: t.budget ?? config.defaultBudget, is_bot: false }
+      return { number: t.number, sector: t.sector, status, claimed_at: t.claimed_at, allocated: t.allocated, budget: t.budget ?? config.defaultBudget, is_bot: false }
     })
     .sort((a, b) => order[a.status] - order[b.status] || a.number.localeCompare(b.number))
 }
 
+// Одна строка выгрузки площадки: «Id билета  Сектор  Штрихкод» (через табуляцию, ; или запятую) — или просто номер.
+// Номер — первое поле нужной длины; сектор — первое поле с буквами.
+export function parseTicketLine(line: string): { number: string; sector: string | null } | null {
+  const fields = line.split(/[\t;,]+/).map((f) => f.trim().toUpperCase().replace(/\s+/g, ' ')).filter(Boolean)
+  const number = fields.map((f) => f.replace(/\s+/g, '')).find((f) => ticketMatchesFormat(f)) ?? (fields.length === 1 ? normalizeTicket(fields[0]) : undefined)
+  if (!number) return null
+  const sector = fields.find((f) => f.replace(/\s+/g, '') !== number && /[A-ZА-ЯЁ]/.test(f)) ?? null
+  return { number, sector }
+}
+
 export const importTickets = db.transaction((text: string): number => {
-  const insert = db.prepare('INSERT OR IGNORE INTO tickets (number, guest_id, claimed_at, released) VALUES (?, NULL, NULL, 0)')
+  const insert = db.prepare('INSERT OR IGNORE INTO tickets (number, sector, guest_id, claimed_at, released) VALUES (?, ?, NULL, NULL, 0)')
+  const updateSector = db.prepare('UPDATE tickets SET sector = ? WHERE number = ? AND sector IS NULL')
   let added = 0
   for (const line of text.split(/\r?\n/)) {
-    const number = normalizeTicket(line)
-    if (!number) continue
-    added += insert.run(number).changes
+    const parsed = parseTicketLine(line)
+    if (!parsed) continue
+    const changes = insert.run(parsed.number, parsed.sector).changes
+    added += changes
+    if (!changes && parsed.sector) updateSector.run(parsed.sector, parsed.number)
   }
   log('tickets_import', `Добавлено ${added}`)
   return added
 })
 
 export const generateTickets = db.transaction((count: number): string[] => {
-  const insert = db.prepare('INSERT OR IGNORE INTO tickets (number, guest_id, claimed_at, released) VALUES (?, NULL, NULL, 0)')
+  const insert = db.prepare('INSERT OR IGNORE INTO tickets (number, sector, guest_id, claimed_at, released) VALUES (?, NULL, NULL, NULL, 0)')
   const created: string[] = []
   let guard = 0
   while (created.length < count && guard++ < count * 50) {

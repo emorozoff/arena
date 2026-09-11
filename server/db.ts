@@ -18,6 +18,10 @@ db.pragma('synchronous = NORMAL')
 
 db.exec(fs.readFileSync(new URL('./schema.sql', import.meta.url), 'utf8'))
 
+// Дополнения к таблицам для баз, созданных раньше (CREATE TABLE IF NOT EXISTS новые колонки не добавляет)
+const ticketColumns = (db.prepare('PRAGMA table_info(tickets)').all() as { name: string }[]).map((c) => c.name)
+if (!ticketColumns.includes('sector')) db.exec('ALTER TABLE tickets ADD COLUMN sector TEXT')
+
 // Ровно одна строка состояния шоу
 db.prepare('INSERT OR IGNORE INTO show_state (id, default_budget, updated_at) VALUES (1, ?, ?)').run(config.defaultBudget, now())
 

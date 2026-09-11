@@ -11,9 +11,17 @@ export const config = {
   plusButtons: [50_000, 100_000, 500_000],
   minusButtons: [50_000, 100_000],
 
-  // Билеты по умолчанию: 4 цифры (решение D13, окончательно выберем после демо)
-  ticketLength: 4,
+  // Билеты: 12 цифр под штрихкодом билета площадки (решение D25). Запасные коды для кассы — той же длины
+  ticketLength: 12,
   ticketChars: 'digits' as 'digits' | 'letters_digits',
+  // Секторы (тарифы) билетов из выгрузки площадки — как их показывать зрителю. Неизвестный сектор показывается как есть.
+  sectorLabels: {
+    GOLD: 'Gold',
+    PLATINUM: 'Platinum',
+    BUSINESS: 'Business',
+    STANDARD: 'Standard',
+    'ПОЧЕТНЫЙ ГОСТЬ': 'Почётный гость',
+  } as Record<string, string>,
 
   // Как часто экран получает свежие суммы (не чаще раза в секунду)
   screenRefreshMs: 1000,

@@ -90,6 +90,7 @@ admin_sessions  (сессии ведущего: id из cookie, created_at)
 
 tickets     (и whitelist, и захваченные билеты — одна таблица)
   number        PRIMARY KEY
+  sector        тариф билета из выгрузки площадки (GOLD, STANDARD, ...) или NULL (D25)
   guest_id      NULL, пока билет не захвачен
   claimed_at
   released      0/1 — ведущий «отвязал»: следующий вход по этому номеру забирает гостя себе (D4)

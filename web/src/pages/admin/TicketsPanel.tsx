@@ -1,6 +1,7 @@
 // Билеты: свёрнутый блок внизу пульта. Нужен до шоу (создать коды) и если зритель потерял доступ (отвязать).
 // Формат номера (длина, символы) задаётся в shared/config.ts, в админке не меняется (решение D18).
 import { useState } from 'react'
+import { config } from '@shared/config'
 import { formatMoney } from '@shared/format'
 import { texts } from '@shared/texts'
 import type { AdminOverview, AdminTicket, TicketMode } from '@shared/types'
@@ -150,7 +151,8 @@ function TicketsBody({ o, apply, notify }: { o: AdminOverview; apply: Apply; not
 function TicketRow({ t, onRelease }: { t: AdminTicket; onRelease: () => void }) {
   return (
     <li className="flex items-center gap-3 py-2 text-sm">
-      <span className="display text-lg tracking-widest w-20">{t.number}</span>
+      <span className="display text-lg tracking-wider">{t.number}</span>
+      {t.sector && <span className="text-xs text-accent border border-accent/60 rounded px-1">{config.sectorLabels[t.sector] ?? t.sector}</span>}
       <span className={t.status === 'claimed' ? 'text-accent' : 'text-muted'}>{texts.admin.ticketStatus[t.status]}</span>
       {t.is_bot && <span className="text-xs text-muted border border-line rounded px-1">{texts.admin.bot}</span>}
       <span className="money text-muted ml-auto">{t.status === 'free' ? '' : `${formatMoney(t.allocated)} / ${formatMoney(t.budget)}`}</span>

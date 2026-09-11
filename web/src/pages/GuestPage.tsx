@@ -30,6 +30,7 @@ export function GuestPage() {
           <span className="display text-muted text-sm">{texts.common.showName}</span>
           <StatusDot online={online} />
         </div>
+        <SectorBadge sector={state.sector} />
         <div className="text-muted text-sm mt-3">{texts.guest.free}</div>
         <div className="display money text-accent text-5xl leading-none mt-1">{formatMoney(state.free)}</div>
         <div className="text-muted text-xs mt-2">
@@ -103,6 +104,13 @@ function ProjectCard({
   )
 }
 
+// Тариф билета (сектор из выгрузки площадки): GOLD, STANDARD, ... Показывается, если известен.
+function SectorBadge({ sector }: { sector: string | null }) {
+  if (!sector) return null
+  const label = config.sectorLabels[sector] ?? sector
+  return <span className="inline-block mt-3 px-3 py-1 rounded-full border border-accent text-accent display text-sm tracking-wider">{label}</span>
+}
+
 function ClosedView({ state, online }: { state: GuestState; online: boolean }) {
   const mine = state.projects.filter((p) => p.is_open && p.my_amount > 0)
   const total = mine.reduce((acc, p) => acc + p.my_amount, 0)
@@ -112,6 +120,7 @@ function ClosedView({ state, online }: { state: GuestState; online: boolean }) {
         <span className="display text-muted text-sm">{texts.common.showName}</span>
         <StatusDot online={online} />
       </div>
+      <SectorBadge sector={state.sector} />
       <div>
         <h1 className="display text-5xl text-accent">{texts.guest.votingClosedTitle}</h1>
         <p className="text-muted mt-3 leading-relaxed">{texts.guest.votingClosedText}</p>

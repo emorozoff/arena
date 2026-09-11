@@ -37,6 +37,7 @@ export interface GuestProject {
 // Полное состояние зрителя. Любой запрос зрителя возвращает именно это (решение D7).
 export interface GuestState {
   ticket_number: string
+  sector: string | null   // тариф билета из выгрузки площадки (GOLD, STANDARD, ...) или null
   budget: number
   free: number
   voting_open: boolean
@@ -65,6 +66,7 @@ export type TicketStatus = 'free' | 'claimed' | 'released'
 
 export interface AdminTicket {
   number: string
+  sector: string | null
   status: TicketStatus
   claimed_at: string | null
   allocated: number

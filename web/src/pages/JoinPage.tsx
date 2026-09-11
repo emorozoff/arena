@@ -9,6 +9,13 @@ import { Input } from '../components/Field'
 import { api, IS_DEMO } from '../lib/api'
 import { navigate } from '../lib/router'
 
+// Цифры показываем группами по четыре, как номер карты: 7866 0018 2909. Пробелы сервер игнорирует.
+function groupDigits(raw: string): string {
+  if (config.ticketChars !== 'digits') return raw.toUpperCase()
+  const digits = raw.replace(/\D/g, '').slice(0, config.ticketLength)
+  return digits.replace(/(\d{4})(?=\d)/g, '$1 ')
+}
+
 export function JoinPage() {
   const [ticket, setTicket] = useState('')
   const [busy, setBusy] = useState(false)
@@ -55,13 +62,13 @@ export function JoinPage() {
           <span className="text-sm text-muted">{texts.join.ticketLabel}</span>
           <Input
             value={ticket}
-            onChange={(e) => setTicket(e.target.value)}
+            onChange={(e) => setTicket(groupDigits(e.target.value))}
             placeholder={texts.join.ticketPlaceholder}
             inputMode={config.ticketChars === 'digits' ? 'numeric' : 'text'}
             autoComplete="off"
             autoCapitalize="characters"
-            maxLength={12}
-            className="h-16 text-3xl text-center tracking-[0.3em] display"
+            maxLength={config.ticketLength + Math.ceil(config.ticketLength / 4)}
+            className="h-16 text-2xl text-center tracking-[0.15em] display"
           />
         </label>
         <Button type="submit" size="lg" disabled={busy || ticket.trim().length === 0}>

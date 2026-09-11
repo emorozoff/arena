@@ -131,8 +131,10 @@ export function guestState(guest: GuestRow): GuestState {
     my_amount: mine.get(p.id) ?? 0,
   }))
   const allocated = projects.reduce((acc, p) => acc + p.my_amount, 0)
+  const ticket = db.prepare('SELECT sector FROM tickets WHERE number = ?').get(guest.ticket_number) as { sector: string | null } | undefined
   return {
     ticket_number: guest.ticket_number,
+    sector: ticket?.sector ?? null,
     budget: guest.budget,
     free: guest.budget - allocated,
     voting_open: show.voting_open,
