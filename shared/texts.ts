@@ -62,6 +62,8 @@ export const texts = {
     notInvested: 'Вы ничего не вложили',
     totalInvested: 'Всего вложено',
     ticket: 'Билет',
+    logout: 'Выйти',
+    logoutConfirm: 'Выйти и ввести другой номер билета? Ваши вложения сохранятся за этим билетом.',
   },
 
   screen: {

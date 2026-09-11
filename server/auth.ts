@@ -51,6 +51,10 @@ export function setGuestCookie(c: Context, token: string) {
   })
 }
 
+export function clearGuestCookie(c: Context) {
+  deleteCookie(c, GUEST_COOKIE, { path: '/' })
+}
+
 export function requireGuest(c: Context): GuestRow {
   const token = guestToken(c)
   const guest = token ? (db.prepare('SELECT * FROM guests WHERE token = ?').get(token) as GuestRow | undefined) : undefined

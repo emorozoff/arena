@@ -6,6 +6,7 @@ import { texts } from '@shared/texts'
 import type { GuestProject, GuestState } from '@shared/types'
 import { Button } from '../components/Button'
 import { OfflineBanner, StatusDot, Toast } from '../components/Status'
+import { api } from '../lib/api'
 import { navigate } from '../lib/router'
 import { useGuest } from '../lib/useGuest'
 
@@ -34,7 +35,7 @@ export function GuestPage() {
         <div className="text-muted text-sm mt-3">{texts.guest.free}</div>
         <div className="display money text-accent text-5xl leading-none mt-1">{formatMoney(state.free)}</div>
         <div className="text-muted text-xs mt-2">
-          {texts.guest.of} {formatMoney(state.budget)} · {texts.guest.ticket} {state.ticket_number}
+          {texts.guest.of} {formatMoney(state.budget)} · {texts.guest.ticket} {state.ticket_number} · <LogoutLink />
         </div>
         <div className="h-1 bg-line rounded mt-3 overflow-hidden">
           <div className="h-full bg-accent transition-all duration-300" style={{ width: `${Math.round(allocatedShare * 100)}%` }} />
@@ -104,6 +105,20 @@ function ProjectCard({
   )
 }
 
+// «Выйти»: забыть билет на этом телефоне и вернуться к вводу номера. Вложения остаются за билетом.
+function LogoutLink() {
+  const logout = async () => {
+    if (!window.confirm(texts.guest.logoutConfirm)) return
+    await api.logout()
+    navigate('join')
+  }
+  return (
+    <button type="button" onClick={() => void logout()} className="underline text-muted">
+      {texts.guest.logout}
+    </button>
+  )
+}
+
 // Тариф билета (сектор из выгрузки площадки): GOLD, STANDARD, ... Показывается, если известен.
 function SectorBadge({ sector }: { sector: string | null }) {
   if (!sector) return null
@@ -141,7 +156,7 @@ function ClosedView({ state, online }: { state: GuestState; online: boolean }) {
           <span className="display money text-2xl">{formatMoney(total)}</span>
         </div>
         <div className="text-xs text-muted mt-2">
-          {texts.guest.ticket} {state.ticket_number}
+          {texts.guest.ticket} {state.ticket_number} · <LogoutLink />
         </div>
       </section>
       <OfflineBanner online={online} />

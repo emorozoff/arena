@@ -17,6 +17,7 @@ export interface Api {
   join(ticket: string): Promise<GuestState>
   getMe(): Promise<GuestState>
   allocate(projectId: string, amount: number): Promise<GuestState>
+  logout(): Promise<void>   // забыть билет на этом устройстве (вложения остаются за билетом)
 
   // Экран на сцену
   getScreen(): Promise<ScreenState>

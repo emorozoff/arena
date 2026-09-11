@@ -78,6 +78,10 @@ export const httpApi: Api = {
   },
   getMe: () => request<GuestState>('/api/me'),
   allocate: (projectId, amount) => request<GuestState>('/api/allocate', 'POST', { project_id: projectId, amount }),
+  async logout() {
+    setToken(null)
+    await request('/api/logout', 'POST')
+  },
 
   getScreen: () => request('/api/screen/state'),
 

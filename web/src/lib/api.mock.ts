@@ -457,6 +457,10 @@ export const mockApi: Api = {
     return guestState(guest)
   },
 
+  async logout() {
+    rememberToken(null)
+  },
+
   async getScreen(): Promise<ScreenState> {
     const show = store.show
     const ranked = sortedProjects()

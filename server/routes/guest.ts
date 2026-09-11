@@ -1,7 +1,7 @@
 // Зритель: вход по билету, своё состояние, вложение.
 import { Hono } from 'hono'
 import { ApiError } from '@shared/types'
-import { requireGuest, setGuestCookie } from '../auth'
+import { clearGuestCookie, requireGuest, setGuestCookie } from '../auth'
 import { db, now } from '../db'
 import { emitShow, emitTotals } from '../events'
 import { setAllocation } from '../logic/allocate'
@@ -34,4 +34,11 @@ guestRoutes.post('/allocate', async (c) => {
   setAllocation(guest.id, projectId, amount)
   emitTotals()
   return c.json(guestState(guest))
+})
+
+// Забыть билет на этом устройстве. Сам билет и вложения остаются: войти снова можно после «Отвязать» в пульте
+// или, если билет отвязан, просто введя номер заново.
+guestRoutes.post('/logout', (c) => {
+  clearGuestCookie(c)
+  return c.json({ ok: true })
 })
