@@ -44,7 +44,19 @@ export function AdminLogin({ onDone }: { onDone: () => void }) {
       <h1 className="display text-4xl">{texts.admin.loginTitle}</h1>
       <label>
         <Label>{texts.admin.password}</Label>
-        <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoFocus />
+        {/* Пароль виден при вводе (просьба Егора): в тёмном зале и на телефоне скрытые точки только мешают.
+            Телефону запрещаем автозаглавную букву и автозамену, иначе «slavasuper» превращается в «Slavasuper». */}
+        <Input
+          type="text"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          autoFocus
+          autoComplete="off"
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
+          className="display text-2xl tracking-wider"
+        />
       </label>
       <Button type="submit" size="lg">
         {texts.admin.login}
