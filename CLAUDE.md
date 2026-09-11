@@ -56,4 +56,4 @@ npm run build:demo          # прототип одним файлом → demo/
 
 Прототип для заказчика: https://emorozoff.github.io/arena/ — собирается GitHub Actions из ветки `demo` (`.github/workflows/pages.yml`). Обновление демки: `git checkout demo && git merge main && git push && git checkout main` — только по команде Егора и только из состояния, прошедшего `npm run check` и сборку.
 
-Боевой адрес: https://unicorn-arena.emorozoff.ru (арендованный сервер Егора, D14–D15; настройка на этапе 7).
+Боевой адрес: https://bets.unicornfellowship.ru (сервер заказчика Selectel, D14–D15); запасной https://unicorn-arena.emorozoff.ru. Обновление сервера: `bash /opt/arena/deploy/update.sh` по SSH.

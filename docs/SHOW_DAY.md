@@ -1,7 +1,7 @@
 # Чек-лист дня шоу (каркас, заполним на этапе 7)
 
 ## Сервер (шпаргалка)
-- Адрес: https://unicorn-arena.emorozoff.ru — пульт `/#/admin`, экран `/#/screen`, вход `/join`
+- Адрес: https://bets.unicornfellowship.ru — пульт `/admin`, экран `/screen`, вход `/join` (запасной адрес: https://unicorn-arena.emorozoff.ru)
 - Зайти на сервер: `ssh -i ~/.ssh/arena_beget root@45.159.211.200`
 - Жив ли: `systemctl status arena` и `curl -s localhost:3000/api/health`
 - Перезапустить: `systemctl restart arena`

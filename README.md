@@ -14,7 +14,7 @@
 
 Прототип для заказчика: **https://emorozoff.github.io/arena/** (открывается с телефона; данные ненастоящие, зал из ботов). Публикуется из ветки `demo`.
 
-Боевой адрес (после этапа 7): https://unicorn-arena.emorozoff.ru
+Боевой адрес: https://bets.unicornfellowship.ru (запасной: https://unicorn-arena.emorozoff.ru)
 Тот же прототип одним файлом: [demo/arena-demo.html](demo/arena-demo.html).
 
 ## Запуск на своём компьютере
