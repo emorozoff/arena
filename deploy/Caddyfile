@@ -1,6 +1,7 @@
-# HTTPS-вход. Caddy сам получает и продлевает сертификат для адреса ниже и передаёт запросы серверу Node.
+# HTTPS-вход. Caddy сам получает и продлевает сертификаты для адресов ниже и передаёт запросы серверу Node.
 # Копируется в /etc/caddy/Caddyfile (см. deploy/install.sh).
-unicorn-arena.emorozoff.ru {
+# Основной адрес — домен заказчика; unicorn-arena.emorozoff.ru — запасной, ведёт туда же.
+bets.unicornfellowship.ru, unicorn-arena.emorozoff.ru {
 	encode gzip
 	reverse_proxy localhost:3000 {
 		# Реалтайм-сигналы (SSE) должны уходить клиенту сразу, без буферизации
