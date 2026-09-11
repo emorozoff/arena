@@ -1,0 +1,18 @@
+# Автозапуск программы шоу. Копируется в /etc/systemd/system/arena.service (см. deploy/install.sh).
+[Unit]
+Description=Арена Единорогов — сервер голосования
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=arena
+WorkingDirectory=/opt/arena
+ExecStart=/usr/bin/npm start
+Restart=always
+RestartSec=2
+Environment=NODE_ENV=production
+# 800 зрителей держат 800 соединений одновременно — лимит открытых файлов по умолчанию (1024) мал (D24)
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
