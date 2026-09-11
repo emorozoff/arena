@@ -15,7 +15,7 @@ import { useLive } from '../lib/useLive'
 import { AdminLogin } from './AdminPage'
 
 export function ScreenPage() {
-  const { data, error, refresh } = useLive(() => api.getScreen(), ['show', 'totals'])
+  const { data, online, error, refresh } = useLive(() => api.getScreen(), ['show', 'totals'])
   const last = useRef<ScreenState | null>(null)
   if (data) last.current = data
   const s = last.current
@@ -27,10 +27,18 @@ export function ScreenPage() {
     <div className="min-h-[calc(100dvh-var(--demo-bar,0px))] bg-bg text-text flex flex-col p-[4vmin]">
       <div className="flex items-center justify-between">
         <span className="display text-muted text-[clamp(14px,2.5vmin,32px)]">{texts.common.showName}</span>
-        {/* Индикатора связи на проекторе нет (просьба Егора): при обрыве экран молча держит последнее состояние */}
-        {s && !s.voting_open && (
-          <span className="display text-accent text-[clamp(14px,2.5vmin,32px)]">{texts.screen.votingClosed}</span>
-        )}
+        <div className="flex items-center gap-[3vmin]">
+          {s && !s.voting_open && (
+            <span className="display text-accent text-[clamp(14px,2.5vmin,32px)]">{texts.screen.votingClosed}</span>
+          )}
+          {/* Пока связь есть — на проекторе чисто. Индикатор появляется только при обрыве (просьба Егора) */}
+          {!online && (
+            <span className="inline-flex items-center gap-[1vmin] text-muted text-[clamp(12px,2vmin,28px)]">
+              <span className="w-[1.4vmin] h-[1.4vmin] rounded-full bg-accent animate-pulse" />
+              {texts.common.offline}
+            </span>
+          )}
+        </div>
       </div>
       <div className="flex-1 flex items-center justify-center">
         {s && (s.mode === 'qr' ? <QrMode s={s} /> : <OverviewMode rows={s.overview} finale={s.finale} />)}
