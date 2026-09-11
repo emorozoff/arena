@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Обновление до свежей версии из GitHub. Запускать от root на сервере: bash /opt/arena/deploy/update.sh
 set -euo pipefail
+git config --global --add safe.directory /opt/arena
 cd /opt/arena
 git pull --ff-only
 npm ci --no-audit --no-fund

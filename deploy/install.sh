@@ -32,6 +32,7 @@ id arena >/dev/null 2>&1 || useradd --system --create-home --home-dir /var/lib/a
 if [ ! -d "$APP_DIR/.git" ]; then
   git clone "$REPO" "$APP_DIR"
 fi
+git config --global --add safe.directory "$APP_DIR"
 cd "$APP_DIR"
 git pull --ff-only
 npm ci --no-audit --no-fund
