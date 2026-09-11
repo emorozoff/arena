@@ -164,7 +164,15 @@ action_log
 - Разработка: `npm run dev` на Маке — сервер (порт из `.env`, по умолчанию 3000) и Vite (5173, запросы `/api` проксирует серверу). Сервер печатает адреса в локальной сети для телефонов.
 - Как в бою: `npm run build && npm start` — один процесс раздаёт `dist/` и API. Настройки в `.env` (см. `.env.example`): `ADMIN_PASSWORD` обязателен.
 - Показать кому-то снаружи: `cloudflared tunnel --url http://localhost:3000` даёт временную публичную ссылку.
-- Боевой хостинг (этап 7): арендованный сервер Егора (Ubuntu 24.04, play2go, IP 2.26.80.53), адрес https://unicorn-arena.emorozoff.ru, Node под systemd, HTTPS через Caddy. Плюс план Б — тот же `npm start` на ноутбуке в зале.
+- Боевой хостинг: сервер заказчика (Selectel, Россия, IP `45.159.211.200`, Ubuntu 22.04). Адрес https://unicorn-arena.emorozoff.ru. Установка описана скриптами в `deploy/`:
+  - `deploy/install.sh` — первичная установка на чистый Ubuntu (Node 24, Caddy, код в `/opt/arena`, пользователь `arena`, служба systemd)
+  - `deploy/update.sh` — обновить сервер до свежего `main` из GitHub одной командой
+  - `deploy/backup.sh` — копия базы после шоу
+  - `deploy/arena.service` — служба автозапуска (`LimitNOFILE=65536` под 800 соединений)
+  - `deploy/Caddyfile` — HTTPS и проксирование к Node (SSE без буферизации)
+  - Настройки на сервере: `/opt/arena/.env` (пароль пульта, `PUBLIC_URL`), база `/opt/arena/data/arena.db`
+  - Подключение с Мака Егора: `ssh -i ~/.ssh/arena_beget root@45.159.211.200`
+  Плюс план Б для маленького зала — тот же `npm start` на ноутбуке.
 
 ## Правила надёжности
 

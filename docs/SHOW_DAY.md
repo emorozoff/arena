@@ -1,5 +1,14 @@
 # Чек-лист дня шоу (каркас, заполним на этапе 7)
 
+## Сервер (шпаргалка)
+- Адрес: https://unicorn-arena.emorozoff.ru — пульт `/#/admin`, экран `/#/screen`, вход `/join`
+- Зайти на сервер: `ssh -i ~/.ssh/arena_beget root@45.159.211.200`
+- Жив ли: `systemctl status arena` и `curl -s localhost:3000/api/health`
+- Перезапустить: `systemctl restart arena`
+- Обновить до свежей версии: `bash /opt/arena/deploy/update.sh`
+- Копия базы после шоу: `bash /opt/arena/deploy/backup.sh`
+- Логи: `journalctl -u arena -n 100 --no-pager`
+
 ## За день
 - [ ] Сервер запущен, `/admin` открывается, пароль известен ведущему и оператору
 - [ ] Проекты заведены в правильном порядке, все закрыты
