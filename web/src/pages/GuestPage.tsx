@@ -38,7 +38,7 @@ export function GuestPage() {
         <div className="display text-muted text-base mt-4">{texts.guest.free}</div>
         <div className="display money text-accent text-6xl leading-none mt-1">{formatMoney(state.free)}</div>
         <div className="text-muted text-xs mt-2">
-          {texts.guest.of} {formatMoney(state.budget)} · {texts.guest.ticket} {state.ticket_number} · <LogoutLink />
+          {texts.guest.ticket} {state.ticket_number} · <LogoutLink />
         </div>
         <div className="h-1 bg-line rounded mt-3 overflow-hidden">
           <div className="h-full bg-accent transition-all duration-300" style={{ width: `${Math.round(allocatedShare * 100)}%` }} />
