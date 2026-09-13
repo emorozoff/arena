@@ -39,7 +39,7 @@ export const texts = {
     title: 'Вход в зал',
     subtitle: 'Введите 12 цифр под штрихкодом на билете, чтобы получить миллион на инвестиции',
     ticketLabel: 'Номер билета',
-    ticketPlaceholder: '12 цифр под штрихкодом',
+    ticketPlaceholder: '',
     enter: 'Войти',
     lostAccess: 'Это мой билет, я потерял доступ',
     lostAccessTitle: 'Покажите организатору',
