@@ -28,12 +28,14 @@ export function GuestPage() {
   return (
     <div className="max-w-md mx-auto px-4 pb-28">
       <header className="sticky top-[var(--demo-bar,0px)] z-30 bg-bg/95 backdrop-blur py-4 border-b border-line glow-top">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3">
           <Logo className="h-6" />
-          <StatusDot online={online} />
+          <div className="flex items-center gap-3">
+            <StatusDot online={online} />
+            <SectorBadge sector={state.sector} />
+          </div>
         </div>
-        <SectorBadge sector={state.sector} />
-        <div className="display text-muted text-base mt-3">{texts.guest.free}</div>
+        <div className="display text-muted text-base mt-4">{texts.guest.free}</div>
         <div className="display money text-accent text-6xl leading-none mt-1">{formatMoney(state.free)}</div>
         <div className="text-muted text-xs mt-2">
           {texts.guest.of} {formatMoney(state.budget)} · {texts.guest.ticket} {state.ticket_number} · <LogoutLink />
@@ -124,7 +126,7 @@ function LogoutLink() {
 function SectorBadge({ sector }: { sector: string | null }) {
   if (!sector) return null
   const label = config.sectorLabels[sector] ?? sector
-  return <span className="inline-block mt-3 px-3 py-1 rounded-full border border-accent text-accent display text-sm tracking-wider">{label}</span>
+  return <span className="inline-block px-3 py-1 rounded-full border border-accent text-accent display text-base tracking-wider">{label}</span>
 }
 
 function ClosedView({ state, online }: { state: GuestState; online: boolean }) {
@@ -132,11 +134,13 @@ function ClosedView({ state, online }: { state: GuestState; online: boolean }) {
   const total = mine.reduce((acc, p) => acc + p.my_amount, 0)
   return (
     <div className="max-w-md mx-auto px-4 pt-8 pb-16 flex flex-col gap-5">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
         <Logo className="h-6" />
-        <StatusDot online={online} />
+        <div className="flex items-center gap-3">
+          <StatusDot online={online} />
+          <SectorBadge sector={state.sector} />
+        </div>
       </div>
-      <SectorBadge sector={state.sector} />
       <div>
         <h1 className="display text-6xl text-accent">{texts.guest.votingClosedTitle}</h1>
         <p className="text-muted mt-3 leading-relaxed">{texts.guest.votingClosedText}</p>

@@ -1,11 +1,13 @@
 // Индикаторы связи: точка в шапке и плашка «Нет связи, повторяем…» внизу экрана.
 import { texts } from '@shared/texts'
 
+// Пока связь есть — ничего не показываем (правило Егора: пишем только «связи нет»)
 export function StatusDot({ online }: { online: boolean }) {
+  if (online) return null
   return (
     <span className="inline-flex items-center gap-2 text-xs text-muted">
-      <span className={`w-2.5 h-2.5 rounded-full ${online ? 'bg-ok' : 'bg-accent animate-pulse'}`} />
-      {online ? texts.common.online : texts.common.offline}
+      <span className="w-2.5 h-2.5 rounded-full bg-accent animate-pulse" />
+      {texts.common.offline}
     </span>
   )
 }
