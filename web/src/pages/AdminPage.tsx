@@ -2,6 +2,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { texts } from '@shared/texts'
 import { ApiError, type AdminOverview } from '@shared/types'
+import { Logo } from '../components/Brand'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { Input, Label } from '../components/Field'
@@ -40,8 +41,9 @@ export function AdminLogin({ onDone }: { onDone: () => void }) {
     }
   }
   return (
-    <form onSubmit={submit} className="max-w-sm mx-auto px-5 pt-16 flex flex-col gap-4">
-      <h1 className="display text-4xl">{texts.admin.loginTitle}</h1>
+    <form onSubmit={submit} className="max-w-sm mx-auto px-5 pt-12 flex flex-col gap-4">
+      <Logo className="h-8" />
+      <h1 className="display text-5xl mt-2">{texts.admin.loginTitle}</h1>
       <label>
         <Label>{texts.admin.password}</Label>
         {/* Пароль виден при вводе (просьба Егора): в тёмном зале и на телефоне скрытые точки только мешают.
@@ -91,10 +93,10 @@ function AdminPanel() {
     <div className="max-w-6xl mx-auto px-4 pt-6 pb-28 flex flex-col gap-4">
       <header className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <span className="display text-muted text-sm">{texts.common.showName}</span>
+          <Logo className="h-6" />
           <StatusDot online={live.online} />
         </div>
-        <h1 className="display text-4xl">{texts.admin.title}</h1>
+        <h1 className="display text-5xl">{texts.admin.title}</h1>
         <div className="flex flex-wrap gap-2 text-sm">
           <Chip on={o.show.registration_open} label={`${texts.admin.registration}: ${o.show.registration_open ? texts.admin.openState : texts.admin.closedState}`} />
           <Chip on={o.show.voting_open} label={`${texts.admin.voting}: ${o.show.voting_open ? texts.admin.openState : texts.admin.closedState}`} />

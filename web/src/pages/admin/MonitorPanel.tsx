@@ -19,7 +19,7 @@ export function MonitorPanel({ o }: { o: AdminOverview }) {
         {o.projects.map((p) => (
           <li key={p.id} className={p.is_open ? '' : 'opacity-50'}>
             <div className="flex items-baseline justify-between gap-3 text-sm">
-              <span className="truncate">
+              <span className="break-words min-w-0">
                 {p.position}. {p.name}
               </span>
               <span className="money shrink-0">

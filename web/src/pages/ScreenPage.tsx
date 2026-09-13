@@ -9,6 +9,7 @@ import QRCode from 'qrcode'
 import { formatMoney, plural } from '@shared/format'
 import { texts } from '@shared/texts'
 import type { ProjectTotals, ScreenState } from '@shared/types'
+import { Logo } from '../components/Brand'
 import { CountUp } from '../components/CountUp'
 import { api } from '../lib/api'
 import { useLive } from '../lib/useLive'
@@ -26,7 +27,7 @@ export function ScreenPage() {
   return (
     <div className="min-h-[calc(100dvh-var(--demo-bar,0px))] bg-bg text-text flex flex-col p-[4vmin]">
       <div className="flex items-center justify-between">
-        <span className="display text-muted text-[clamp(14px,2.5vmin,32px)]">{texts.common.showName}</span>
+        <Logo className="h-[clamp(20px,4vmin,56px)]" />
         <div className="flex items-center gap-[3vmin]">
           {s && !s.voting_open && (
             <span className="display text-accent text-[clamp(14px,2.5vmin,32px)]">{texts.screen.votingClosed}</span>
@@ -65,6 +66,7 @@ function QrMode({ s }: { s: ScreenState }) {
         {src && <img src={src} alt="QR" className="w-full h-full block" />}
       </div>
       <div className="flex flex-col gap-[3vmin] max-w-[70vmin] landscape:max-w-[50vw] text-center landscape:text-left">
+        <div className="display text-accent text-[clamp(18px,3.5vmin,52px)]">{texts.common.showName}</div>
         <h1 className="display text-[clamp(28px,7vmin,110px)] leading-[0.95]">{texts.screen.qrTitle}</h1>
         <p className="text-muted text-[clamp(14px,2.6vmin,36px)] leading-snug">{texts.screen.qrHint}</p>
         <div>
@@ -95,10 +97,10 @@ function OverviewMode({ rows, finale }: { rows: ProjectTotals[]; finale: ScreenS
       {rows.map((r, i) => {
         const isWinner = winnerShown && i === 0
         return (
-          <div key={r.id} className={`row-appear ${isWinner ? 'rounded-[1vmin] outline outline-1 outline-accent/70 p-[1.5vmin] -m-[1.5vmin]' : ''}`}>
+          <div key={r.id} className={`row-appear ${isWinner ? 'rounded-[1vmin] outline outline-1 outline-accent/70 glow p-[1.5vmin] -m-[1.5vmin]' : ''}`}>
             {isWinner && <div className="display text-accent text-[clamp(12px,2vmin,28px)] mb-[0.5vmin]">{texts.screen.winner}</div>}
             <div className="flex items-baseline justify-between gap-4">
-              <span className="display text-[clamp(18px,4.2vmin,64px)] leading-none truncate">{r.name}</span>
+              <span className="display text-[clamp(18px,4.2vmin,64px)] leading-none break-words min-w-0">{r.name}</span>
               <CountUp value={r.amount} initial={finale ? 0 : undefined} duration={finale ? 1400 : 800} format={formatMoney} className="display text-accent text-[clamp(20px,5vmin,72px)] leading-none shrink-0" />
             </div>
             <div className="flex items-center gap-[2vmin] mt-[1vmin]">

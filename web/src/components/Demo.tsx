@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { texts } from '@shared/texts'
 import { api } from '../lib/api'
 import { navigate, type Route } from '../lib/router'
+import { Logo } from './Brand'
 import { Button } from './Button'
 
 const INTRO_KEY = 'arena_demo_intro_seen'
@@ -73,7 +74,8 @@ export function DemoIntro() {
   return (
     <div className="fixed inset-0 z-[60] bg-bg/95 flex items-center justify-center p-6">
       <div className="max-w-md w-full bg-card border border-line rounded-2xl p-6 flex flex-col gap-4">
-        <span className="display text-accent text-lg">{texts.common.showName}</span>
+        <Logo className="h-7" />
+        <span className="display text-accent text-2xl">{texts.common.showName}</span>
         <h1 className="display text-3xl">{texts.demo.introTitle}</h1>
         {texts.demo.introLines.map((line) => (
           <p key={line} className="text-muted leading-relaxed">

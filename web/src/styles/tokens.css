@@ -1,18 +1,31 @@
-/* Палитра и шрифты шоу (docs/DESIGN.md). Менять цвета — только здесь. */
+/* Фирменный стиль шоу (docs/DESIGN.md): цвета и шрифты сайта arena.unicornfellowship.ru.
+   Шрифты лежат в проекте (web/public/fonts), из интернета ничего не грузится. Менять цвета — только здесь. */
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Bebas Neue";
+  src: url("../fonts/BebasNeue.woff") format("woff");
+  font-weight: 400 700;
+  font-display: swap;
+}
+@font-face { font-family: "Inter Display"; src: url("../fonts/InterDisplay-Regular.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Inter Display"; src: url("../fonts/InterDisplay-Medium.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+@font-face { font-family: "Inter Display"; src: url("../fonts/InterDisplay-SemiBold.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+@font-face { font-family: "Inter Display"; src: url("../fonts/InterDisplay-Bold.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+
 @theme {
-  --color-bg: #0a0a0a;
-  --color-card: #111111;
-  --color-line: #222222;
+  --color-bg: #050505;
+  --color-card: #101010;
+  --color-line: #383838;
   --color-text: #ffffff;
-  --color-muted: #8a8a8a;
-  --color-accent: #ff3b0d;
-  --color-accent-hover: #ff5a2e;
+  --color-soft: #e0e0e0;
+  --color-muted: #bdbdbd;
+  --color-accent: #ff4800;
+  --color-accent-hover: #ff6021;
   --color-ok: #3ddc84;
 
-  --font-display: "Oswald", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
-  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Bebas Neue", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --font-sans: "Inter Display", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
 
 html {
@@ -36,12 +49,22 @@ button, a, input, select, textarea {
   font-variant-numeric: tabular-nums;
 }
 
-/* Заголовки шоу: узкий шрифт, капслок */
+/* Заголовки и большие цифры: Bebas Neue, капслок, как на сайте шоу */
 .display {
   font-family: var(--font-display);
+  font-weight: 400;
   text-transform: uppercase;
-  letter-spacing: -0.01em;
-  line-height: 0.95;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  /* Надстрочные знаки Й и Ё выше высоты заглавных: не обрезать их overflow:hidden (без truncate на .display) */
+}
+
+/* Мягкое оранжевое свечение, как внизу блоков на сайте. Только там, где нужно выделить: победитель, шапка */
+.glow {
+  box-shadow: 0 0 60px -10px rgba(255, 72, 0, 0.45);
+}
+.glow-top {
+  background: radial-gradient(60% 120% at 50% -20%, rgba(255, 72, 0, 0.28), transparent 70%);
 }
 
 /* Новая строка на экране плавно появляется сверху */

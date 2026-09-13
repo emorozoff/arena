@@ -4,6 +4,7 @@ import { config } from '@shared/config'
 import { formatDelta, formatMoney } from '@shared/format'
 import { texts } from '@shared/texts'
 import type { GuestProject, GuestState } from '@shared/types'
+import { Logo } from '../components/Brand'
 import { Button } from '../components/Button'
 import { OfflineBanner, StatusDot, Toast } from '../components/Status'
 import { api } from '../lib/api'
@@ -26,14 +27,14 @@ export function GuestPage() {
 
   return (
     <div className="max-w-md mx-auto px-4 pb-28">
-      <header className="sticky top-[var(--demo-bar,0px)] z-30 bg-bg/95 backdrop-blur py-4 border-b border-line">
+      <header className="sticky top-[var(--demo-bar,0px)] z-30 bg-bg/95 backdrop-blur py-4 border-b border-line glow-top">
         <div className="flex items-center justify-between">
-          <span className="display text-muted text-sm">{texts.common.showName}</span>
+          <Logo className="h-6" />
           <StatusDot online={online} />
         </div>
         <SectorBadge sector={state.sector} />
-        <div className="text-muted text-sm mt-3">{texts.guest.free}</div>
-        <div className="display money text-accent text-5xl leading-none mt-1">{formatMoney(state.free)}</div>
+        <div className="display text-muted text-base mt-3">{texts.guest.free}</div>
+        <div className="display money text-accent text-6xl leading-none mt-1">{formatMoney(state.free)}</div>
         <div className="text-muted text-xs mt-2">
           {texts.guest.of} {formatMoney(state.budget)} · {texts.guest.ticket} {state.ticket_number} · <LogoutLink />
         </div>
@@ -49,7 +50,7 @@ export function GuestPage() {
         ))}
         {closed.map((p) => (
           <div key={p.id} className="border border-dashed border-line rounded-xl px-4 py-4 text-muted">
-            <span className="display text-lg">{texts.guest.closedProject(p.position)}</span>
+            <span className="display text-xl">{texts.guest.closedProject(p.position)}</span>
             <span className="text-sm"> · {texts.guest.opensLater}</span>
           </div>
         ))}
@@ -76,12 +77,12 @@ function ProjectCard({
   return (
     <section className={`bg-card border rounded-xl p-4 ${invested ? 'border-accent/60' : 'border-line'}`}>
       <div className="text-xs text-muted">{texts.guest.closedProject(project.position)}</div>
-      <h2 className="display text-2xl mt-1">{project.name}</h2>
+      <h2 className="display text-3xl mt-1">{project.name}</h2>
       <div className="text-muted text-sm mt-1">{project.speaker}</div>
 
       <div className="flex items-baseline justify-between mt-4">
-        <span className="text-sm text-muted">{texts.guest.invested}</span>
-        <span className={`display money text-3xl ${invested ? 'text-accent' : 'text-muted'}`}>{formatMoney(project.my_amount)}</span>
+        <span className="display text-base text-muted">{texts.guest.invested}</span>
+        <span className={`display money text-4xl ${invested ? 'text-accent' : 'text-muted'}`}>{formatMoney(project.my_amount)}</span>
       </div>
 
       <div className="grid grid-cols-3 gap-2 mt-3">
@@ -132,12 +133,12 @@ function ClosedView({ state, online }: { state: GuestState; online: boolean }) {
   return (
     <div className="max-w-md mx-auto px-4 pt-8 pb-16 flex flex-col gap-5">
       <div className="flex items-center justify-between">
-        <span className="display text-muted text-sm">{texts.common.showName}</span>
+        <Logo className="h-6" />
         <StatusDot online={online} />
       </div>
       <SectorBadge sector={state.sector} />
       <div>
-        <h1 className="display text-5xl text-accent">{texts.guest.votingClosedTitle}</h1>
+        <h1 className="display text-6xl text-accent">{texts.guest.votingClosedTitle}</h1>
         <p className="text-muted mt-3 leading-relaxed">{texts.guest.votingClosedText}</p>
       </div>
       <section className="bg-card border border-line rounded-xl p-4">

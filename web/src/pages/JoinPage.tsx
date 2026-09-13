@@ -3,6 +3,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { config } from '@shared/config'
 import { texts } from '@shared/texts'
 import { ApiError, type ApiErrorCode } from '@shared/types'
+import { Logo } from '../components/Brand'
 import { Button } from '../components/Button'
 import { Card } from '../components/Card'
 import { Input } from '../components/Field'
@@ -50,10 +51,11 @@ export function JoinPage() {
   if (checking) return <div className="min-h-dvh bg-bg" />
 
   return (
-    <div className="max-w-md mx-auto px-5 pt-10 pb-16 flex flex-col gap-6">
-      <div>
-        <span className="display text-accent text-lg">{texts.common.showName}</span>
-        <h1 className="display text-5xl mt-2">{texts.join.title}</h1>
+    <div className="max-w-md mx-auto px-5 pt-8 pb-16 flex flex-col gap-6">
+      <Logo className="h-8" />
+      <div className="mt-2">
+        <span className="display text-accent text-2xl">{texts.common.showName}</span>
+        <h1 className="display text-6xl mt-1">{texts.join.title}</h1>
         <p className="text-muted mt-3 leading-relaxed">{texts.join.subtitle}</p>
       </div>
 
@@ -68,7 +70,7 @@ export function JoinPage() {
             autoComplete="off"
             autoCapitalize="characters"
             maxLength={config.ticketLength + Math.ceil(config.ticketLength / 4)}
-            className="h-16 text-2xl text-center tracking-[0.15em] display"
+            className="h-16 text-3xl text-center tracking-[0.12em] display"
           />
         </label>
         <Button type="submit" size="lg" disabled={busy || ticket.trim().length === 0}>
@@ -87,7 +89,7 @@ export function JoinPage() {
         <Card title={texts.join.lostAccessTitle}>
           <p className="text-muted leading-relaxed">{texts.join.lostAccessText}</p>
           <p className="text-sm text-muted mt-4">{texts.join.lostAccessCodeLabel}</p>
-          <p className="display text-5xl text-accent tracking-[0.2em] mt-1">{ticket.trim().toUpperCase()}</p>
+          <p className="display text-5xl text-accent tracking-[0.12em] mt-1">{ticket.trim().toUpperCase()}</p>
         </Card>
       )}
 
