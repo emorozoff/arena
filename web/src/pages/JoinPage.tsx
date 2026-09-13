@@ -71,7 +71,7 @@ export function JoinPage() {
       <div className="mt-2">
         <span className="display text-accent text-2xl">{texts.common.showName}</span>
         <h1 className="display text-6xl mt-1">{texts.join.title}</h1>
-        <p className="text-muted mt-3 leading-relaxed">{texts.join.subtitle}</p>
+        <p className="text-muted mt-3 leading-relaxed whitespace-pre-line">{texts.join.subtitle}</p>
       </div>
 
       <form onSubmit={submit} className="flex flex-col gap-3">
