@@ -17,6 +17,21 @@ function groupDigits(raw: string): string {
   return digits.replace(/(\d{4})(?=\d)/g, '$1 ')
 }
 
+// Бланк под полем: «____ ____ ____», подчёркивания исчезают по мере ввода.
+// Введённая часть повторяется прозрачным текстом тем же шрифтом, поэтому подчёркивания всегда стоят ровно после курсора.
+function TicketMask({ value }: { value: string }) {
+  const digits = value.replace(/\D/g, '')
+  const full = (digits + '_'.repeat(Math.max(0, config.ticketLength - digits.length))).replace(/(.{4})(?=.)/g, '$1 ')
+  const typed = full.slice(0, value.length)
+  const rest = full.slice(value.length)
+  return (
+    <div aria-hidden className="absolute inset-0 flex items-center px-4 pointer-events-none display text-3xl tracking-[0.12em] whitespace-pre">
+      <span className="text-transparent">{typed}</span>
+      <span className="text-line">{rest}</span>
+    </div>
+  )
+}
+
 export function JoinPage() {
   const [ticket, setTicket] = useState('')
   const [busy, setBusy] = useState(false)
@@ -62,16 +77,19 @@ export function JoinPage() {
       <form onSubmit={submit} className="flex flex-col gap-3">
         <label className="flex flex-col gap-2">
           <span className="text-sm text-muted">{texts.join.ticketLabel}</span>
-          <Input
-            value={ticket}
-            onChange={(e) => setTicket(groupDigits(e.target.value))}
-            placeholder={texts.join.ticketPlaceholder}
-            inputMode={config.ticketChars === 'digits' ? 'numeric' : 'text'}
-            autoComplete="off"
-            autoCapitalize="characters"
-            maxLength={config.ticketLength + Math.ceil(config.ticketLength / 4)}
-            className="h-16 text-3xl text-center tracking-[0.12em] display"
-          />
+          <div className="relative">
+            {config.ticketChars === 'digits' && <TicketMask value={ticket} />}
+            <Input
+              value={ticket}
+              onChange={(e) => setTicket(groupDigits(e.target.value))}
+              placeholder={texts.join.ticketPlaceholder}
+              inputMode={config.ticketChars === 'digits' ? 'numeric' : 'text'}
+              autoComplete="off"
+              autoCapitalize="characters"
+              maxLength={config.ticketLength + Math.ceil(config.ticketLength / 4)}
+              className="relative h-16 px-4 text-3xl tracking-[0.12em] display bg-transparent"
+            />
+          </div>
         </label>
         <Button type="submit" size="lg" disabled={busy || ticket.trim().length === 0}>
           {texts.join.enter}
