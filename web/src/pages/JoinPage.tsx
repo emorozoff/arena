@@ -24,10 +24,18 @@ function TicketMask({ value }: { value: string }) {
   const full = (digits + '_'.repeat(Math.max(0, config.ticketLength - digits.length))).replace(/(.{4})(?=.)/g, '$1 ')
   const typed = full.slice(0, value.length)
   const rest = full.slice(value.length)
+  // Каждая незаполненная позиция — отдельная чёрточка шириной в одну цифру (1ch), между ними зазор,
+  // чтобы бланк читался как «____ ____ ____», а не как сплошная линия
   return (
     <div aria-hidden className="absolute inset-0 flex items-center px-4 pointer-events-none display text-3xl tracking-[0.12em] whitespace-pre">
       <span className="text-transparent">{typed}</span>
-      <span className="text-line">{rest}</span>
+      {[...rest].map((ch, i) =>
+        ch === ' ' ? (
+          <span key={i} className="inline-block w-[0.45em]" />
+        ) : (
+          <span key={i} className="inline-block w-[1ch] mx-[0.06em] h-[0.72em] border-b-2 border-line align-baseline" />
+        ),
+      )}
     </div>
   )
 }
