@@ -1,7 +1,7 @@
 // Вход зрителя: одно поле — номер билета.
 import { useEffect, useState, type FormEvent } from 'react'
 import { config } from '@shared/config'
-import { typo } from '@shared/format'
+import { formatMoney, typo } from '@shared/format'
 import { texts } from '@shared/texts'
 import { ApiError, type ApiErrorCode } from '@shared/types'
 import { Logo } from '../components/Brand'
@@ -38,6 +38,18 @@ function TicketMask({ value }: { value: string }) {
         ),
       )}
     </div>
+  )
+}
+
+// Подзаголовок: сумма из настроек вставляется вместо {budget} и выделяется оранжевым
+function Subtitle() {
+  const [before, after] = typo(texts.join.subtitle).split('{budget}')
+  return (
+    <>
+      {before}
+      <span className="text-accent font-semibold whitespace-nowrap money">{formatMoney(config.defaultBudget)}</span>
+      {after ?? ''}
+    </>
   )
 }
 
@@ -80,7 +92,9 @@ export function JoinPage() {
       <div className="mt-2">
         <span className="display text-accent text-2xl">{texts.common.showName}</span>
         <h1 className="display text-6xl mt-1">{typo(texts.join.title)}</h1>
-        <p className="text-muted mt-3 leading-relaxed whitespace-pre-line">{typo(texts.join.subtitle)}</p>
+        <p className="text-muted mt-3 leading-relaxed whitespace-pre-line">
+          <Subtitle />
+        </p>
       </div>
 
       <form onSubmit={submit} className="flex flex-col gap-3">
