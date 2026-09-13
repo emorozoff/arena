@@ -1,7 +1,7 @@
 // Телефон зрителя: свободный остаток, открытые проекты с кнопками, заглушки закрытых.
 import { useEffect } from 'react'
 import { config } from '@shared/config'
-import { formatDelta, formatMoney } from '@shared/format'
+import { formatDelta, formatMoney, typo } from '@shared/format'
 import { texts } from '@shared/texts'
 import type { GuestProject, GuestState } from '@shared/types'
 import { Logo } from '../components/Brand'
@@ -46,7 +46,7 @@ export function GuestPage() {
       </header>
 
       <main className="flex flex-col gap-3 mt-4">
-        {open.length === 0 && <p className="text-muted text-center py-8">{texts.guest.noProjectsYet}</p>}
+        {open.length === 0 && <p className="text-muted text-center py-8">{typo(texts.guest.noProjectsYet)}</p>}
         {open.map((p) => (
           <ProjectCard key={p.id} project={p} free={state.free} onBump={bump} onTakeAll={takeAll} />
         ))}
@@ -143,7 +143,7 @@ function ClosedView({ state, online }: { state: GuestState; online: boolean }) {
       </div>
       <div>
         <h1 className="display text-6xl text-accent">{texts.guest.votingClosedTitle}</h1>
-        <p className="text-muted mt-3 leading-relaxed">{texts.guest.votingClosedText}</p>
+        <p className="text-muted mt-3 leading-relaxed">{typo(texts.guest.votingClosedText)}</p>
       </div>
       <section className="bg-card border border-line rounded-xl p-4">
         <h2 className="display text-2xl">{texts.guest.yourAllocations}</h2>

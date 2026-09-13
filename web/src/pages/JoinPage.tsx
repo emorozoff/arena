@@ -1,6 +1,7 @@
 // Вход зрителя: одно поле — номер билета.
 import { useEffect, useState, type FormEvent } from 'react'
 import { config } from '@shared/config'
+import { typo } from '@shared/format'
 import { texts } from '@shared/texts'
 import { ApiError, type ApiErrorCode } from '@shared/types'
 import { Logo } from '../components/Brand'
@@ -78,8 +79,8 @@ export function JoinPage() {
       <Logo className="h-8" />
       <div className="mt-2">
         <span className="display text-accent text-2xl">{texts.common.showName}</span>
-        <h1 className="display text-6xl mt-1">{texts.join.title}</h1>
-        <p className="text-muted mt-3 leading-relaxed whitespace-pre-line">{texts.join.subtitle}</p>
+        <h1 className="display text-6xl mt-1">{typo(texts.join.title)}</h1>
+        <p className="text-muted mt-3 leading-relaxed whitespace-pre-line">{typo(texts.join.subtitle)}</p>
       </div>
 
       <form onSubmit={submit} className="flex flex-col gap-3">
@@ -113,7 +114,7 @@ export function JoinPage() {
 
       {lostAccess && (
         <Card title={texts.join.lostAccessTitle}>
-          <p className="text-muted leading-relaxed">{texts.join.lostAccessText}</p>
+          <p className="text-muted leading-relaxed">{typo(texts.join.lostAccessText)}</p>
           <p className="text-sm text-muted mt-4">{texts.join.lostAccessCodeLabel}</p>
           <p className="display text-5xl text-accent tracking-[0.12em] mt-1">{ticket.trim().toUpperCase()}</p>
         </Card>

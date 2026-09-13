@@ -38,3 +38,10 @@ export function formatTime(iso: string | null): string {
   const d = new Date(iso)
   return d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
 }
+
+// Типографика: короткие слова (предлоги, союзы) не остаются в конце строки — после них неразрывный пробел.
+// «Инвестируйте в проекты» не разорвётся как «…В / ПРОЕКТЫ».
+const SHORT_WORDS = /(^|[\s(«])([а-яёa-z]{1,2})\s+/giu
+export function typo(text: string): string {
+  return text.replace(SHORT_WORDS, (_m, before: string, word: string) => `${before}${word}\u00A0`)
+}
