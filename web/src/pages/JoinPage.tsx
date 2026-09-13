@@ -97,6 +97,12 @@ export function JoinPage() {
         </p>
       </div>
 
+      {/* Образец билета: где искать 12 цифр. Файл web/public/brand/ticket-sample.jpg */}
+      <figure className="rounded-xl overflow-hidden border border-line bg-card">
+        <img src="./brand/ticket-sample.jpg" alt="" className="w-full h-auto block" />
+        <figcaption className="text-xs text-muted px-3 py-2">{typo(texts.join.sampleCaption)}</figcaption>
+      </figure>
+
       <form onSubmit={submit} className="flex flex-col gap-3">
         <label className="flex flex-col gap-2">
           <span className="text-sm text-muted">{texts.join.ticketLabel}</span>
